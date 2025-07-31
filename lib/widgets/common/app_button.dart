@@ -8,6 +8,7 @@ class AppButton extends StatelessWidget {
   final Color backgroundColor;
   final Color textColor;
   final EdgeInsets padding;
+  final Widget? icon; // New optional icon widget
 
   const AppButton({
     super.key,
@@ -18,6 +19,7 @@ class AppButton extends StatelessWidget {
     this.backgroundColor = const Color(0xFF2ECC71),
     this.textColor = Colors.black,
     this.padding = const EdgeInsets.symmetric(vertical: 16),
+    this.icon,
   });
 
   @override
@@ -35,12 +37,25 @@ class AppButton extends StatelessWidget {
         ),
         child: isLoading
             ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-            : Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            color: textColor,
-          ),
+            : Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              icon!,
+              const SizedBox(width: 12),
+            ],
+            Flexible(
+              child: Text(
+                text,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

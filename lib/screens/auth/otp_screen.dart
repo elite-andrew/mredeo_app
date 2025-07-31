@@ -68,7 +68,7 @@ class OtpScreen extends StatelessWidget {
               AppButton(
                 text: 'Confirm',
                 onPressed: () {
-                  context.go(AppRoutes.login);
+                  context.go(AppRoutes.resetPassword);
                 },
               ),
             ],

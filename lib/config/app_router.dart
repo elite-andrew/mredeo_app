@@ -21,6 +21,7 @@ import 'package:redeo_app/screens/member/payment_status_screen.dart';
 import 'package:redeo_app/screens/member/settings_screen.dart';
 import 'package:redeo_app/screens/member/terms_and_conditions_screen.dart';
 import 'package:redeo_app/screens/member/transactions_history_screen.dart';
+import 'package:redeo_app/screens/member/customer_support_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/splash',
@@ -82,6 +83,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/transaction',
       builder: (context, state) => const TransactionsHistoryScreen(),
+    ),
+    GoRoute(
+      path: '/customer_support',
+      builder: (context, state) => const CustomerSupportScreen(),
     ),
 
     //Administrator Screens Routes

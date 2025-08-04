@@ -68,12 +68,7 @@ class RegisterScreen extends StatelessWidget {
                     // Sign Up with Phone Number
                     AppButton(
                       onPressed: () {
-                        // Navigate to phone sign up
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Phone signup coming soon!'),
-                          ),
-                        );
+                        context.push(AppRoutes.signUpWithPhone);
                       },
                       text: 'Sign Up With Phone Number',
                     ),
@@ -82,12 +77,7 @@ class RegisterScreen extends StatelessWidget {
                     // Sign Up with Email
                     AppButton(
                       onPressed: () {
-                        // Navigate to email sign up
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Email signup coming soon!'),
-                          ),
-                        );
+                        context.push(AppRoutes.signUpWithEmail);
                       },
                       text: 'Sign Up With Email',
                     ),

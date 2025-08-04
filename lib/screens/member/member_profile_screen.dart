@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:redeo_app/widgets/common/custom_app_bar.dart';
+import 'package:redeo_app/widgets/common/app_button.dart';
 
 class MemberProfileScreen extends StatelessWidget {
   const MemberProfileScreen({super.key});
@@ -93,66 +94,46 @@ class MemberProfileScreen extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // Action Buttons
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implement edit profile functionality
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Edit profile feature coming soon!'),
-                          ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2ECC71),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  // Action Buttons using AppButton widget
+                  AppButton(
+                    text: 'Edit Profile',
+                    onPressed: () {
+                      // TODO: Implement edit profile functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Edit profile feature coming soon!'),
                         ),
-                      ),
-                      child: const Text(
-                        'Edit Profile',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.edit,
+                      color: Colors.black,
+                      size: 18,
                     ),
                   ),
 
                   const SizedBox(height: 12),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {
-                        // TODO: Implement change password functionality
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Change password feature coming soon!'),
-                          ),
-                        );
-                      },
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        side: const BorderSide(color: Color(0xFF2ECC71)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  AppButton(
+                    text: 'Change Password',
+                    onPressed: () {
+                      // TODO: Implement change password functionality
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Change password feature coming soon!'),
                         ),
-                      ),
-                      child: const Text(
-                        'Change Password',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Color(0xFF2ECC71),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      );
+                    },
+                    backgroundColor: Colors.white,
+                    textColor: const Color(0xFF2ECC71),
+                    icon: const Icon(
+                      Icons.lock,
+                      color: Color(0xFF2ECC71),
+                      size: 18,
                     ),
                   ),
+
+                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -219,4 +200,5 @@ class MemberProfileScreen extends StatelessWidget {
         ],
       ),
     );
-  }}
+  }
+}

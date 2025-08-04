@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:redeo_app/config/app_routes.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -9,7 +10,7 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -34,7 +35,7 @@ class RegisterScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: CircleAvatar(
                         radius: 40,
-                        backgroundColor: Color(0xFF6A7180),
+                        backgroundColor: AppColors.primary,
                       ),
                     ),
 
@@ -108,7 +109,7 @@ class RegisterScreen extends StatelessWidget {
                             text: 'By joining, you agree to MREDEO Pay\'s ',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: AppColors.textSecondary,
                               height: 1.4,
                             ),
                             children: [
@@ -116,7 +117,7 @@ class RegisterScreen extends StatelessWidget {
                                 text: 'Terms of Service',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  color: Color(0xFF2ECC71),
+                                  color: AppColors.primary,
                                 ),
                               ),
                             ],

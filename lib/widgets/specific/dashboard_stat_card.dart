@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class DashboardStatCard extends StatelessWidget {
   final String title;
@@ -19,11 +20,11 @@ class DashboardStatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(13),
+            color: AppColors.shadow.withAlpha(13),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -33,13 +34,12 @@ class DashboardStatCard extends StatelessWidget {
         children: [
           // Icon container
           Container(
-            width: 50,
-            height: 50,
-            decoration: const BoxDecoration(
-              color: Color(0xFF2ECC71),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.getPrimaryWithAlpha(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: Colors.black, size: 24),
+            child: Icon(icon, color: AppColors.primary, size: 24),
           ),
           const SizedBox(height: 12),
 
@@ -49,7 +49,7 @@ class DashboardStatCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: AppColors.textPrimary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -61,7 +61,7 @@ class DashboardStatCard extends StatelessWidget {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: AppColors.textPrimary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -73,7 +73,7 @@ class DashboardStatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: isPaid ? const Color(0xFF2ECC71) : Colors.red,
+              color: isPaid ? AppColors.primary : AppColors.error,
             ),
             textAlign: TextAlign.center,
           ),

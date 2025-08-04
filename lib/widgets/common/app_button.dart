@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
@@ -16,8 +17,8 @@ class AppButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.borderRadius = 18,
-    this.backgroundColor = const Color(0xFF2ECC71),
-    this.textColor = Colors.black,
+    this.backgroundColor = AppColors.primary,
+    this.textColor = AppColors.textPrimary,
     this.padding = const EdgeInsets.symmetric(vertical: 16),
     this.icon,
   });
@@ -35,28 +36,26 @@ class AppButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
           ),
         ),
-        child: isLoading
-            ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
-            : Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              icon!,
-              const SizedBox(width: 12),
-            ],
-            Flexible(
-              child: Text(
-                text,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor,
+        child:
+            isLoading
+                ? const CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                )
+                : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[icon!, const SizedBox(width: 12)],
+                    Flexible(
+                      child: Text(
+                        text,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 16, color: textColor),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

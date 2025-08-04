@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Colors
-  static const Color primary = Color(0xFF2ECC71);
-  static const Color primaryLight = Color(0xFFEAFBF0);
+  static const Color primary = Color(0xFF128c7E); // WhatsApp UI green
+  static const Color primaryLight = Color(
+    0xFFE8F3F1,
+  ); // Lighter shade of WhatsApp green
 
   // Text Colors
   static const Color textPrimary = Colors.black;

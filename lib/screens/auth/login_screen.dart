@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:redeo_app/config/app_routes.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/common/app_text_field.dart';
 
@@ -41,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final isKeyboardVisible = keyboardHeight > 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       resizeToAvoidBottomInset: false, // Important: prevents automatic resizing
       body: SafeArea(
         child: SingleChildScrollView(
@@ -74,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Circle Avatar (Left aligned)
                     const CircleAvatar(
                       radius: 40,
-                      backgroundColor: Color(0xFF6A7180),
+                      backgroundColor: AppColors.primary,
                     ),
 
                     // Spacing
@@ -132,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'Forgot Password?',
                           style: TextStyle(
-                            color: Color(0xFF2ECC71),
+                            color: AppColors.primary,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
@@ -163,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: RichText(
                           text: TextSpan(
                             style: TextStyle(
-                              color: Colors.grey[600],
+                              color: AppColors.textSecondary,
                               fontSize: 14,
                             ),
                             children: [
@@ -171,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextSpan(
                                 text: 'Sign up',
                                 style: const TextStyle(
-                                  color: Color(0xFF2ECC71),
+                                  color: AppColors.primary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

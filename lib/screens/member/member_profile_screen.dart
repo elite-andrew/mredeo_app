@@ -19,7 +19,7 @@ class MemberProfileScreen extends StatelessWidget {
     };
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F3F3),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
           // Using the existing CustomAppBar widget
@@ -36,7 +36,7 @@ class MemberProfileScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -50,13 +50,13 @@ class MemberProfileScreen extends StatelessWidget {
                       children: [
                         const CircleAvatar(
                           radius: 50,
-                          backgroundColor: Color(0xFF2ECC71),
+                          backgroundColor: AppColors.primary,
                           child: Text(
                             'BS',
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -66,7 +66,7 @@ class MemberProfileScreen extends StatelessWidget {
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -74,7 +74,7 @@ class MemberProfileScreen extends StatelessWidget {
                           userData['membershipType']!,
                           style: const TextStyle(
                             fontSize: 14,
-                            color: Color(0xFF2ECC71),
+                            color: AppColors.primary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -118,7 +118,11 @@ class MemberProfileScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.edit, color: Colors.black, size: 18),
+                    icon: Icon(
+                      Icons.edit,
+                      color: AppColors.textPrimary,
+                      size: 18,
+                    ),
                   ),
 
                   const SizedBox(height: 12),
@@ -133,13 +137,9 @@ class MemberProfileScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    backgroundColor: Colors.white,
-                    textColor: const Color(0xFF2ECC71),
-                    icon: const Icon(
-                      Icons.lock,
-                      color: Color(0xFF2ECC71),
-                      size: 18,
-                    ),
+                    backgroundColor: AppColors.surface,
+                    textColor: AppColors.primary,
+                    icon: Icon(Icons.lock, color: AppColors.primary, size: 18),
                   ),
 
                   const SizedBox(height: 20),

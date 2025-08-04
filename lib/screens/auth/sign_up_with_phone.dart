@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/common/app_text_field.dart';
@@ -66,14 +67,15 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
     final isKeyboardVisible = keyboardHeight > 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height -
+              minHeight:
+                  MediaQuery.of(context).size.height -
                   MediaQuery.of(context).padding.top -
                   MediaQuery.of(context).padding.bottom,
             ),
@@ -122,10 +124,7 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
                       padding: EdgeInsets.only(left: 4.0, top: 8.0),
                       child: Text(
                         '- You can\'t change your username so choose wisely.',
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 13,
-                        ),
+                        style: TextStyle(color: Colors.grey, fontSize: 13),
                       ),
                     ),
 
@@ -151,34 +150,22 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
                         children: [
                           Text(
                             '- At least 8 characters',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                           SizedBox(height: 4),
                           Text(
                             '- At least 1 uppercase letter',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                           SizedBox(height: 4),
                           Text(
                             '- At least 1 lowercase letter',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                           SizedBox(height: 4),
                           Text(
                             '- At least 1 special character.',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                            ),
+                            style: TextStyle(color: Colors.black, fontSize: 13),
                           ),
                         ],
                       ),

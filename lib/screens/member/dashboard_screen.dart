@@ -4,6 +4,7 @@ import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/specific/dashboard_stat_card.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -11,7 +12,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F3F3),
+      backgroundColor: AppColors.background,
       extendBodyBehindAppBar: false,
       body: Column(
         children: [
@@ -115,11 +116,11 @@ class HeaderSection extends StatelessWidget {
         30,
       ),
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFF2ECC71),
-        boxShadow: [
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        boxShadow: const [
           BoxShadow(
-            color: Color(0x40000000), // 25% black shadow
+            color: AppColors.shadow, // Using our shadow color
             blurRadius: 4,
             offset: Offset(0, 4),
           ),
@@ -130,13 +131,13 @@ class HeaderSection extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface,
             child: Text(
               'BS', // Replace with user initials
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF000000),
+                color: AppColors.textPrimary,
               ),
             ),
           ),

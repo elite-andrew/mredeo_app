@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class AppTextField extends StatelessWidget {
   final String hintText;
@@ -19,9 +20,9 @@ class AppTextField extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFEAFBF0),
+        color: AppColors.surfaceInput,
         borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: Colors.black38),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
@@ -29,9 +30,16 @@ class AppTextField extends StatelessWidget {
             child: TextField(
               controller: controller,
               obscureText: obscureText,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+                hintStyle: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 14,
+                ),
                 border: InputBorder.none,
               ),
             ),
@@ -41,7 +49,7 @@ class AppTextField extends StatelessWidget {
               onPressed: onToggleVisibility,
               child: Text(
                 obscureText ? 'Show' : 'Hide',
-                style: const TextStyle(color: Colors.green),
+                style: TextStyle(color: AppColors.primary),
               ),
             ),
         ],

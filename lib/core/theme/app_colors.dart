@@ -24,6 +24,8 @@ class AppColors {
   // Utility Colors
   static const Color divider = Colors.black12;
   static const Color shadow = Color(0x40000000);
+  static const Color border = Colors.black38;
+  static const Color surfaceInput = Color(0xFFEAFBF0);
 
   // Helper method to get primary color with opacity
   static Color getPrimaryWithAlpha(double opacity) {

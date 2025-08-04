@@ -19,6 +19,7 @@ class AppRoutes {
   static const settings = '/settings';
   static const termsAndConditions = '/terms_and_conditions';
   static const transactionHistory = '/transaction';
+  static const customerSupport = '/customer_support';
 
   // Admin
   static const adminDashboard = '/admin_dashboard';
@@ -26,4 +27,6 @@ class AppRoutes {
   static const issueNotification = '/issue_notification';
   static const issuePayment = '/issue_payment';
   static const paymentReport = '/payment_report';
+
+  // Member
 }

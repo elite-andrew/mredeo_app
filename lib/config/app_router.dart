@@ -7,7 +7,6 @@ import 'package:redeo_app/screens/admin/issue_payment_screen.dart';
 import 'package:redeo_app/screens/admin/payment_report_screen.dart';
 import 'package:redeo_app/screens/auth/forgot_password_screen.dart';
 
-
 import 'package:redeo_app/screens/auth/login_screen.dart';
 import 'package:redeo_app/screens/auth/otp_screen.dart';
 import 'package:redeo_app/screens/auth/register_screen.dart';
@@ -26,16 +25,10 @@ import 'package:redeo_app/screens/member/transactions_history_screen.dart';
 final GoRouter appRouter = GoRouter(
   initialLocation: '/splash',
   routes: [
-    GoRoute(
-      path: '/splash',
-      builder: (context, state) => const SplashScreen(),
-    ),
+    GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
 
     //Authentication Routes
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => const LoginScreen(),
-    ),
+    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(
       path: '/forgot_password',
       builder: (context, state) => const ForgotPasswordScreen(),
@@ -111,6 +104,6 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/payment_report',
       builder: (context, state) => const PaymentReportScreen(),
-    )
+    ),
   ],
 );

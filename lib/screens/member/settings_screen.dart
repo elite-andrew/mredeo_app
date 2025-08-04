@@ -198,9 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsItemTile(
                   icon: Icons.call,
                   title: 'Customer Support',
-                  onTap: () {
-                    // Add support logic
-                  },
+                  onTap: () => context.push(AppRoutes.customerSupport),
                 ),
                 SettingsItemTile(
                   icon: Icons.logout,

@@ -10,7 +10,7 @@ class RegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true, // Handle keyboard properly
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
@@ -44,7 +44,7 @@ class RegisterScreen extends StatelessWidget {
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Join  MREDEO Pay',
+                        'Join MREDEO Pay',
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -69,6 +69,11 @@ class RegisterScreen extends StatelessWidget {
                     AppButton(
                       onPressed: () {
                         // Navigate to phone sign up
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Phone signup coming soon!'),
+                          ),
+                        );
                       },
                       text: 'Sign Up With Phone Number',
                     ),
@@ -78,8 +83,13 @@ class RegisterScreen extends StatelessWidget {
                     AppButton(
                       onPressed: () {
                         // Navigate to email sign up
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Email signup coming soon!'),
+                          ),
+                        );
                       },
-                      text: 'Sign Up With  Email',
+                      text: 'Sign Up With Email',
                     ),
 
                     const SizedBox(height: 16),
@@ -91,50 +101,43 @@ class RegisterScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Google Sign In - Multiple solutions provided
+                    // Google Sign In
                     _buildGoogleSignInButton(),
 
-                    // Flexible spacer that adapts to content
-                    const Expanded(child: SizedBox()),
+                    const SizedBox(height: 24),
 
-                    // Terms of Service
+                    // Terms of Service - placed near signup actions
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'By joining, you agree to MREDEO Pay\'s ',
-                          style: const TextStyle(fontSize: 13),
-                          children: [
-                            TextSpan(
-                              text: 'Terms of Service',
-                              style: const TextStyle(
-                                decoration: TextDecoration.underline,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              // You can add GestureRecognizer here for tap handling
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Sign In (bottom right)
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: TextButton(
-                        onPressed: () {
-                          context.go(AppRoutes.login);
+                      child: GestureDetector(
+                        onTap: () {
+                          context.push(AppRoutes.termsAndConditions);
                         },
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'By joining, you agree to MREDEO Pay\'s ',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              height: 1.4,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Terms of Service',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF2ECC71),
+                                ),
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16), // Add bottom padding
+
+                    // Bottom spacing
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -146,37 +149,50 @@ class RegisterScreen extends StatelessWidget {
   }
 
   Widget _buildGoogleSignInButton() {
-    // Using asset with error handling - recommended approach
     return AppButton(
       onPressed: () {
-        // Trigger Google sign-in
+        // Add Google sign-in logic here
       },
       text: 'Continue With Google',
-      icon: Image.asset(
-        'assets/icons/google.png',
-        height: 20,
+      icon: Container(
         width: 20,
-        errorBuilder: (context, error, stackTrace) {
-          // Fallback if image fails to load
-          return Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(3),
-              color: Colors.red.shade600,
-            ),
-            child: const Center(
-              child: Text(
-                'G',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+        height: 20,
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(2)),
+        child: Image.asset(
+          'assets/icons/google.png',
+          width: 20,
+          height: 20,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            // Enhanced fallback with better Google-like styling
+            return Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(2),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF4285F4), // Google blue
+                    Color(0xFF34A853), // Google green
+                    Color(0xFFFBBC05), // Google yellow
+                    Color(0xFFEA4335), // Google red
+                  ],
+                  stops: [0.0, 0.33, 0.66, 1.0],
                 ),
               ),
-            ),
-          );
-        },
+              child: const Center(
+                child: Text(
+                  'G',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

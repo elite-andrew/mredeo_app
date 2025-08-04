@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
 
 class TransactionsHistoryScreen extends StatelessWidget {

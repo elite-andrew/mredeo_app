@@ -27,26 +27,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
       extendBodyBehindAppBar: false,
       body: Column(
         children: [
-          // Top Header with Status Bar
+          // Top green header with user info and language switch
           Container(
+            width: double.infinity,
             padding: EdgeInsets.fromLTRB(
               20,
               MediaQuery.of(context).padding.top + 20,
               20,
-              30,
+              20,
             ),
             decoration: const BoxDecoration(
               color: Color(0xFF2ECC71),
               boxShadow: [
                 BoxShadow(
-                  color: Color(0x40000000), // 25% black shadow
-                  blurRadius: 4,
+                  color: Color(0x40000000),
+                  blurRadius: 8,
                   offset: Offset(0, 4),
                 ),
               ],
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const CircleAvatar(
                   radius: 30,
@@ -56,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF000000),
+                      color: Colors.black,
                     ),
                   ),
                 ),
@@ -68,22 +69,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         user['name']!,
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
+                          fontSize: 16,
                         ),
                       ),
                       Text(
                         user['phone']!,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 14,
                         ),
                       ),
                       Text(
                         user['email']!,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.black,
                           fontSize: 13,
                         ),
                       ),
@@ -96,8 +97,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
                     color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                      ),
+                    ],
                   ),
                   child: PopupMenuButton<String>(
                     onSelected: (value) {
@@ -114,35 +121,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(width: 4),
                         const Icon(
                           Icons.arrow_drop_down,
-                          color: Color(0xFF2ECC71),
+                          size: 20,
+                          color: Colors.black,
                         ),
                       ],
                     ),
                     itemBuilder:
                         (context) => [
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'TZ',
                             child: Row(
                               children: [
-                                const Text(
-                                  '🇹🇿',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text('Swahili'),
+                                Text('🇹🇿'),
+                                SizedBox(width: 8),
+                                Text('Swahili'),
                               ],
                             ),
                           ),
-                          PopupMenuItem(
+                          const PopupMenuItem(
                             value: 'UK',
                             child: Row(
                               children: [
-                                const Text(
-                                  '🇬🇧',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(width: 8),
-                                const Text('English'),
+                                Text('🇬🇧'),
+                                SizedBox(width: 8),
+                                Text('English'),
                               ],
                             ),
                           ),
@@ -153,28 +155,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
 
-          // Navigation Bar
+          // Settings title and back button outside header
           Container(
-            color: const Color(0xFFF3F3F3),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => context.pop(),
+                  onPressed: () => context.go(AppRoutes.dashboard),
                 ),
                 const Expanded(
                   child: Text(
                     'Settings',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
                       fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
                   ),
                 ),
-                const SizedBox(width: 48), // Balance the back button
+                const SizedBox(width: 48), // balance
               ],
             ),
           ),
@@ -182,6 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // Settings Items
           Expanded(
             child: ListView(
+              padding: EdgeInsets.zero,
               children: [
                 SettingsItemTile(
                   icon: Icons.person,
@@ -204,7 +206,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   icon: Icons.logout,
                   title: 'Sign Out',
                   onTap: () {
-                    // Exit the app and navigate to login
                     context.go(AppRoutes.login);
                   },
                 ),
@@ -213,7 +214,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
-
       bottomNavigationBar: const AppBottomNavigation(currentIndex: 3),
     );
   }

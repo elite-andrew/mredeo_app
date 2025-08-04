@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:redeo_app/config/app_routes.dart';
@@ -14,9 +13,12 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Simulate loading time then navigate
+
+    // Simulate loading time then navigate safely
     Future.delayed(const Duration(seconds: 3), () {
-      context.go(AppRoutes.login); // Change this to your desired route
+      if (mounted) {
+        context.go(AppRoutes.login); // Safe navigation
+      }
     });
   }
 
@@ -37,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   shape: BoxShape.circle,
                   color: Color(0xFF6A7180), // Your grey circle
                 ),
-                // If you want an image in the circle:
+                // To add an image, uncomment:
                 // child: Image.asset('assets/logo.png'),
               ),
             ),
@@ -64,4 +66,3 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
-

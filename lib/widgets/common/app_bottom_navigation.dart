@@ -66,16 +66,16 @@ class AppBottomNavigation extends StatelessWidget {
             onTap: (index) {
               switch (index) {
                 case 0:
-                  context.go(AppRoutes.dashboard);
+                  context.push(AppRoutes.dashboard);
                   break;
                 case 1:
-                  context.go(AppRoutes.transactionHistory);
+                  context.push(AppRoutes.transactionHistory);
                   break;
                 case 2:
-                  context.go(AppRoutes.notifications);
+                  context.push(AppRoutes.notifications);
                   break;
                 case 3:
-                  context.go(AppRoutes.settings);
+                  context.push(AppRoutes.settings);
                   break;
               }
             },

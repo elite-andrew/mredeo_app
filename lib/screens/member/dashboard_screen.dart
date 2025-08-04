@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -33,63 +34,7 @@ class DashboardScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Color(0xFF2ECC71),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0x1A000000),
-              blurRadius: 8,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: SizedBox(
-            height: 70,
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              selectedItemColor: Colors.black,
-              unselectedItemColor: Colors.black54,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              selectedFontSize: 12,
-              unselectedFontSize: 12,
-              iconSize: 24,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Icon(Icons.home),
-                  ),
-                  label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Icon(Icons.check_box),
-                  ),
-                  label: 'Transactions',
-                ),
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Icon(Icons.notifications),
-                  ),
-                  label: 'Notifications',
-                ),
-                BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: EdgeInsets.only(bottom: 4),
-                    child: Icon(Icons.settings),
-                  ),
-                  label: 'Settings',
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      bottomNavigationBar: const AppBottomNavigation(currentIndex: 0),
     );
   }
 }
@@ -100,7 +45,12 @@ class HeaderSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 20, 20, 30),
+      padding: EdgeInsets.fromLTRB(
+        20,
+        MediaQuery.of(context).padding.top + 20,
+        20,
+        30,
+      ),
       width: double.infinity,
       decoration: const BoxDecoration(
         color: Color(0xFF2ECC71),
@@ -131,13 +81,7 @@ class HeaderSection extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Hi,',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                ),
-              ),
+              Text('Hi,', style: TextStyle(color: Colors.black, fontSize: 18)),
               Text(
                 'Benedict!',
                 style: TextStyle(
@@ -147,7 +91,7 @@ class HeaderSection extends StatelessWidget {
                 ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

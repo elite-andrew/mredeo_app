@@ -16,6 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _obscurePassword = true;
+  // ignore: prefer_final_fields
+  bool _isLoading = false; // Add loading state
 
   @override
   void dispose() {
@@ -23,6 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  // Handle sign in - bypass authentication for development
+  Future<void> _handleSignIn() async {
+    // Bypass authentication and go directly to dashboard
+    context.go(AppRoutes.dashboard);
   }
 
   @override
@@ -41,9 +49,14 @@ class _LoginScreenState extends State<LoginScreen> {
           physics: const ClampingScrollPhysics(),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: isKeyboardVisible
-                  ? screenHeight - keyboardHeight - safePadding.top - safePadding.bottom - 20
-                  : screenHeight - safePadding.top - safePadding.bottom,
+              minHeight:
+                  isKeyboardVisible
+                      ? screenHeight -
+                          keyboardHeight -
+                          safePadding.top -
+                          safePadding.bottom -
+                          20
+                      : screenHeight - safePadding.top - safePadding.bottom,
             ),
             child: IntrinsicHeight(
               child: Padding(
@@ -70,12 +83,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Welcome Text
                     const Text(
                       'Welcome to  MREDEO Pay',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     const Text(
                       'Please enter your registration number and password.',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
 
                     // Spacing
@@ -100,51 +119,70 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
 
+                    // Forgot Password Link - positioned under password field
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed:
+                            _isLoading
+                                ? null
+                                : () {
+                                  context.go(AppRoutes.forgotPassword);
+                                },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Color(0xFF2ECC71),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+
                     // Spacing before button
                     SizedBox(height: isKeyboardVisible ? 20 : 60),
 
                     // Sign In Button
                     AppButton(
-                      onPressed: () {
-                        // You might want to add form validation here
-                        context.go(AppRoutes.dashboard);
-                      },
+                      onPressed: _isLoading ? () {} : () => _handleSignIn(),
                       text: 'Sign In',
+                      isLoading: _isLoading,
+                    ),
+
+                    // Registration prompt - below sign in button
+                    const SizedBox(height: 20),
+                    Center(
+                      child: GestureDetector(
+                        onTap:
+                            _isLoading
+                                ? null
+                                : () {
+                                  context.push(AppRoutes.register);
+                                },
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                            children: [
+                              const TextSpan(text: 'Don\'t have an account? '),
+                              TextSpan(
+                                text: 'Sign up',
+                                style: const TextStyle(
+                                  color: Color(0xFF2ECC71),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
 
                     // Adaptive spacing
                     const Expanded(child: SizedBox()),
-
-                    // Bottom Links - always show but with different styling
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            context.push(AppRoutes.register);
-                          },
-                          child: Text(
-                            'Join',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: isKeyboardVisible ? 12 : 14,
-                            ),
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            context.go(AppRoutes.forgotPassword);
-                          },
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: isKeyboardVisible ? 12 : 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 16),
                   ],
                 ),

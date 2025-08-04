@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redeo_app/widgets/common/custom_app_bar.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class MemberProfileScreen extends StatelessWidget {
   const MemberProfileScreen({super.key});
@@ -39,7 +40,7 @@ class MemberProfileScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withAlpha(26),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -84,13 +85,25 @@ class MemberProfileScreen extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   // Profile Information Cards
-                  _buildInfoCard('Member ID', userData['memberId']!, Icons.badge),
+                  _buildInfoCard(
+                    'Member ID',
+                    userData['memberId']!,
+                    Icons.badge,
+                  ),
                   const SizedBox(height: 12),
-                  _buildInfoCard('Phone Number', userData['phone']!, Icons.phone),
+                  _buildInfoCard(
+                    'Phone Number',
+                    userData['phone']!,
+                    Icons.phone,
+                  ),
                   const SizedBox(height: 12),
                   _buildInfoCard('Email', userData['email']!, Icons.email),
                   const SizedBox(height: 12),
-                  _buildInfoCard('Member Since', userData['joinDate']!, Icons.calendar_today),
+                  _buildInfoCard(
+                    'Member Since',
+                    userData['joinDate']!,
+                    Icons.calendar_today,
+                  ),
 
                   const SizedBox(height: 30),
 
@@ -105,11 +118,7 @@ class MemberProfileScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    icon: const Icon(
-                      Icons.edit,
-                      color: Colors.black,
-                      size: 18,
-                    ),
+                    icon: const Icon(Icons.edit, color: Colors.black, size: 18),
                   ),
 
                   const SizedBox(height: 12),
@@ -152,7 +161,7 @@ class MemberProfileScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -161,16 +170,12 @@ class MemberProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFF2ECC71).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.getPrimaryWithAlpha(0.1),
+              shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: const Color(0xFF2ECC71),
-              size: 20,
-            ),
+            child: Icon(icon, color: AppColors.textPrimary, size: 24),
           ),
           const SizedBox(width: 16),
           Expanded(

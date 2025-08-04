@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String title;
@@ -9,8 +10,8 @@ class CustomAppBar extends StatelessWidget {
   const CustomAppBar({
     super.key,
     required this.title,
-    this.backgroundColor = const Color(0xFF2ECC71),
-    this.textColor = Colors.black,
+    this.backgroundColor = AppColors.primary,
+    this.textColor = AppColors.textPrimary,
   });
 
   @override

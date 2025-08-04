@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:redeo_app/config/app_routes.dart';
+import 'package:redeo_app/core/theme/app_colors.dart';
 
 class AppBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -10,8 +11,8 @@ class AppBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFF2ECC71),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
         boxShadow: [
           BoxShadow(
             color: Color(0x1A000000),

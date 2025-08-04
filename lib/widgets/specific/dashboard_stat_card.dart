@@ -23,7 +23,7 @@ class DashboardStatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -39,11 +39,7 @@ class DashboardStatCard extends StatelessWidget {
               color: Color(0xFF2ECC71),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              icon,
-              color: Colors.black,
-              size: 24,
-            ),
+            child: Icon(icon, color: Colors.black, size: 24),
           ),
           const SizedBox(height: 12),
 

@@ -4,6 +4,7 @@ import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/specific/dashboard_stat_card.dart';
+
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
@@ -31,7 +32,6 @@ class DashboardScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     // Add contribution cards here
-
 
                     // First row - Monthly and Yearly
                     const Row(
@@ -86,7 +86,6 @@ class DashboardScreen extends StatelessWidget {
                     AppButton(
                       text: 'Pay Now',
                       onPressed: () {
-                        // TODO: Navigate to payment screen
                         context.push(AppRoutes.makePayment);
                       },
                     ),

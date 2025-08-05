@@ -128,18 +128,11 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
                   const SizedBox(height: 24),
 
                   // Amount Field
-                  const Text(
-                    'Enter Amount',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   AppTextField(
+                    label: 'Enter Amount',
                     hintText: 'Amount',
                     controller: _amountController,
+                    keyboardType: TextInputType.number,
                   ),
 
                   const SizedBox(height: 24),

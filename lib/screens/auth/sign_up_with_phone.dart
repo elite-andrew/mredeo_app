@@ -18,13 +18,33 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _phoneError;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.addListener(_validatePhoneNumber);
+  }
 
   @override
   void dispose() {
+    _phoneController.removeListener(_validatePhoneNumber);
     _phoneController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _validatePhoneNumber() {
+    final phoneNumber = _phoneController.text.trim();
+    setState(() {
+      _phoneError =
+          phoneNumber.isEmpty
+              ? null
+              : _isPhoneNumberValid(phoneNumber)
+              ? null
+              : 'Phone number must be in format +255XXXXXXXXX or 0XXXXXXXXX';
+    });
   }
 
   bool _isPasswordValid(String password) {
@@ -35,7 +55,70 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
     return true;
   }
 
+  bool _isPhoneNumberValid(String phoneNumber) {
+    // Validate +255 format followed by 9 digits
+    bool isValidPlus255 = RegExp(r'^\+255\d{9}$').hasMatch(phoneNumber);
+
+    // Validate 0 format followed by 9 digits
+    bool isValidZero = RegExp(r'^0\d{9}$').hasMatch(phoneNumber);
+
+    return isValidPlus255 || isValidZero;
+  }
+
+  String? _getPhoneErrorText() {
+    // Only show error if the field is not empty and is invalid
+    if (_phoneController.text.isNotEmpty &&
+        !_isPhoneNumberValid(_phoneController.text)) {
+      return 'Phone number must be in format +255XXXXXXXXX or 0XXXXXXXXX';
+    }
+    return null;
+  }
+
   void _handleSignUp() async {
+    // Validate phone number
+    final phoneNumber = _phoneController.text.trim();
+    if (phoneNumber.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your phone number'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    if (!_isPhoneNumberValid(phoneNumber)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid phone number'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    // Validate username
+    if (_usernameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a username'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    // Validate password
+    if (!_isPasswordValid(_passwordController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid password'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -109,6 +192,8 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
                     AppTextField(
                       hintText: 'Phone Number',
                       controller: _phoneController,
+                      errorText: _phoneError,
+                      keyboardType: TextInputType.phone,
                     ),
 
                     const SizedBox(height: 16),

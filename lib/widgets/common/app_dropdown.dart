@@ -33,9 +33,10 @@ class AppDropdown extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           width: double.infinity,
+          height: 48, // Fixed height to match TextField
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surfaceInput,
             borderRadius: BorderRadius.circular(13),
             border: Border.all(color: AppColors.border),
           ),
@@ -53,7 +54,11 @@ class AppDropdown extends StatelessWidget {
               icon: const Icon(
                 Icons.keyboard_arrow_down,
                 color: AppColors.textSecondary,
+                size: 22, // Smaller icon to match overall proportions
               ),
+              isDense: true, // Makes the dropdown more compact
+              dropdownColor:
+                  AppColors.surfaceInput, // Background color of dropdown items
               items:
                   items.map((String item) {
                     return DropdownMenuItem<String>(
@@ -68,6 +73,13 @@ class AppDropdown extends StatelessWidget {
                     );
                   }).toList(),
               onChanged: onChanged,
+              menuMaxHeight: 300,
+              borderRadius: BorderRadius.circular(13),
+              itemHeight: 48, // Same height as the container
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 14,
+              ),
             ),
           ),
         ),

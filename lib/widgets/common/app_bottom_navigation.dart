@@ -10,77 +10,68 @@ class AppBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x1A000000),
-            blurRadius: 8,
-            offset: Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          height: 70,
-          child: BottomNavigationBar(
-            currentIndex: currentIndex,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.black54,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            iconSize: 24,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(bottom: 4),
-                  child: Icon(Icons.home_outlined),
-                ),
-                label: 'Home',
+    return Material(
+      elevation: 8,
+      color: AppColors.primary,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Colors.black,
+          unselectedItemColor: Colors.black54,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          iconSize: 24,
+          landscapeLayout: BottomNavigationBarLandscapeLayout.centered,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: Icon(Icons.home_outlined),
               ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(bottom: 4),
-                  child: Icon(Icons.receipt_long_outlined),
-                ),
-                label: 'Transactions',
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: Icon(Icons.receipt_long_outlined),
               ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(bottom: 4),
-                  child: Icon(Icons.notifications_outlined),
-                ),
-                label: 'Notifications',
+              label: 'Transactions',
+            ),
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: Icon(Icons.notifications_outlined),
               ),
-              BottomNavigationBarItem(
-                icon: Padding(
-                  padding: EdgeInsets.only(bottom: 4),
-                  child: Icon(Icons.tune),
-                ),
-                label: 'Settings',
+              label: 'Notifications',
+            ),
+            BottomNavigationBarItem(
+              icon: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4),
+                child: Icon(Icons.tune),
               ),
-            ],
-            onTap: (index) {
-              switch (index) {
-                case 0:
-                  context.push(AppRoutes.dashboard);
-                  break;
-                case 1:
-                  context.push(AppRoutes.transactionHistory);
-                  break;
-                case 2:
-                  context.push(AppRoutes.notifications);
-                  break;
-                case 3:
-                  context.push(AppRoutes.settings);
-                  break;
-              }
-            },
-          ),
+              label: 'Settings',
+            ),
+          ],
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                context.push(AppRoutes.dashboard);
+                break;
+              case 1:
+                context.push(AppRoutes.transactionHistory);
+                break;
+              case 2:
+                context.push(AppRoutes.notifications);
+                break;
+              case 3:
+                context.push(AppRoutes.settings);
+                break;
+            }
+          },
         ),
       ),
     );

@@ -24,4 +24,5 @@ flutter:
   # Add assets section
   assets:
     - assets/icons/
+    - assets/icons/payment/
     - assets/images/

@@ -6,6 +6,7 @@ import 'package:redeo_app/widgets/common/custom_app_bar.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/common/app_text_field.dart';
 import 'package:redeo_app/widgets/common/app_dropdown.dart';
+import 'package:redeo_app/widgets/common/app_payment_dropdown.dart';
 
 class MakePaymentScreen extends StatefulWidget {
   const MakePaymentScreen({super.key});
@@ -23,14 +24,20 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
   bool _isLoading = false;
   String? _phoneError;
 
-  final List<String> _contributionTypes = ['Condolences', 'Sickness', 'Yearly'];
+  final List<String> _contributionTypes = ['Yearly', 'Condolences', 'Sickness'];
 
-  final List<String> _paymentServices = [
-    'T-pesa',
-    'Halopesa',
-    'Mixx by Yas',
-    'M-Pesa',
-    'AirtelMoney',
+  final List<PaymentItem> _paymentServices = [
+    PaymentItem(name: 'T-pesa', iconPath: 'assets/icons/payment/tpesa.png'),
+    PaymentItem(
+      name: 'Halopesa',
+      iconPath: 'assets/icons/payment/halopesa.png',
+    ),
+    PaymentItem(name: 'Mixx by Yas', iconPath: 'assets/icons/payment/mixx.png'),
+    PaymentItem(name: 'M-Pesa', iconPath: 'assets/icons/payment/mpesa.png'),
+    PaymentItem(
+      name: 'AirtelMoney',
+      iconPath: 'assets/icons/payment/airtel.png',
+    ),
   ];
 
   @override
@@ -188,7 +195,7 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
                   const SizedBox(height: 24),
 
                   // Payment Service Dropdown
-                  AppDropdown(
+                  AppPaymentDropdown(
                     label: 'Select Payment Service',
                     value: _selectedPaymentService,
                     hint: 'Choose',

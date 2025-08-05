@@ -83,14 +83,14 @@ class DashboardScreen extends StatelessWidget {
                     const SizedBox(height: 40),
 
                     // Pay Now Button
-                    const SizedBox(height: 140),
+                    const SizedBox(height: 120),
                     AppButton(
                       text: 'Pay Now',
                       onPressed: () {
                         context.push(AppRoutes.makePayment);
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),

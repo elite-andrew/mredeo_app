@@ -18,9 +18,20 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
+  String? _emailError;
+  String? _usernameError;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_validateEmail);
+    _usernameController.addListener(_validateUsername);
+  }
 
   @override
   void dispose() {
+    _emailController.removeListener(_validateEmail);
+    _usernameController.removeListener(_validateUsername);
     _emailController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
@@ -29,6 +40,38 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
 
   bool _isEmailValid(String email) {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+  void _validateEmail() {
+    final email = _emailController.text.trim();
+    setState(() {
+      if (email.isEmpty) {
+        _emailError = null;
+      } else if (_isEmailValid(email)) {
+        _emailError = null;
+      } else {
+        _emailError = 'Please enter a valid email address';
+      }
+    });
+  }
+
+  void _validateUsername() {
+    final username = _usernameController.text.trim();
+    setState(() {
+      if (username.isEmpty) {
+        _usernameError = null;
+      } else if (_isUsernameValid(username)) {
+        _usernameError = null;
+      } else {
+        _usernameError =
+            'Username can only contain letters, spaces, underscores, apostrophes, and periods';
+      }
+    });
+  }
+
+  bool _isUsernameValid(String username) {
+    // Username can contain only letters, spaces, underscores, apostrophes, and periods (no numbers)
+    return RegExp(r"^[a-zA-Z_. ']+$").hasMatch(username);
   }
 
   bool _isPasswordValid(String password) {
@@ -40,8 +83,9 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
   }
 
   void _handleSignUp() async {
-    // Basic validation
-    if (!_isEmailValid(_emailController.text)) {
+    // Validate email
+    final email = _emailController.text.trim();
+    if (!_isEmailValid(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a valid email address'),
@@ -51,7 +95,9 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       return;
     }
 
-    if (_usernameController.text.trim().isEmpty) {
+    // Validate username
+    final username = _usernameController.text.trim();
+    if (username.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a username'),
@@ -61,6 +107,19 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       return;
     }
 
+    if (!_isUsernameValid(username)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Username can only contain letters, spaces, underscores, apostrophes, and periods',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate password
     if (!_isPasswordValid(_passwordController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -146,6 +205,9 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
                     AppTextField(
                       hintText: 'Email Address',
                       controller: _emailController,
+                      errorText: _emailError,
+                      onChanged: (_) => _validateEmail(),
+                      keyboardType: TextInputType.emailAddress,
                     ),
 
                     // Email hint
@@ -163,14 +225,26 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
                     AppTextField(
                       hintText: 'Public username',
                       controller: _usernameController,
+                      errorText: _usernameError,
+                      onChanged: (_) => _validateUsername(),
                     ),
 
                     // Username hint
                     const Padding(
                       padding: EdgeInsets.only(left: 4.0, top: 8.0),
-                      child: Text(
-                        '- You can\'t change your username so choose wisely.',
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '- You can\'t change your username so choose wisely.',
+                            style: TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '- Only letters, spaces, underscores (_), apostrophes (\'), and periods (.) allowed.',
+                            style: TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                        ],
                       ),
                     ),
 

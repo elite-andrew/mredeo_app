@@ -19,19 +19,115 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   // ignore: prefer_final_fields
   bool _isLoading = false; // Add loading state
+  String? _emailPhoneError;
+  String? _passwordError;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_validateEmailPhone);
+    _passwordController.addListener(_validatePassword);
+  }
 
   @override
   void dispose() {
+    _emailController.removeListener(_validateEmailPhone);
+    _passwordController.removeListener(_validatePassword);
     _emailController.dispose();
     _passwordController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
+  bool _isValidEmail(String value) {
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value);
+  }
+
+  bool _isValidPhoneNumber(String value) {
+    // Validate +255 format followed by 9 digits
+    bool isValidPlus255 = RegExp(r'^\+255\d{9}$').hasMatch(value);
+
+    // Validate 0 format followed by 9 digits
+    bool isValidZero = RegExp(r'^0\d{9}$').hasMatch(value);
+
+    return isValidPlus255 || isValidZero;
+  }
+
+  void _validateEmailPhone() {
+    final input = _emailController.text.trim();
+    setState(() {
+      if (input.isEmpty) {
+        _emailPhoneError = null;
+      } else if (_isValidEmail(input) || _isValidPhoneNumber(input)) {
+        _emailPhoneError = null;
+      } else {
+        _emailPhoneError = 'Please enter a valid email or phone number';
+      }
+    });
+  }
+
+  void _validatePassword() {
+    final input = _passwordController.text.trim();
+    setState(() {
+      if (input.isEmpty) {
+        _passwordError = 'Password is required';
+      } else if (input.length < 6) {
+        _passwordError = 'Password must be at least 6 characters';
+      } else {
+        _passwordError = null;
+      }
+    });
+  }
+
   // Handle sign in - bypass authentication for development
   Future<void> _handleSignIn() async {
-    // Bypass authentication and go directly to dashboard
-    context.go(AppRoutes.dashboard);
+    // Validate inputs first
+    _validateEmailPhone();
+    _validatePassword();
+
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    // Check if inputs are valid
+    if (email.isEmpty) {
+      setState(() {
+        _emailPhoneError = 'Email or phone number is required';
+      });
+      return;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _passwordError = 'Password is required';
+      });
+      return;
+    }
+
+    if (_emailPhoneError != null || _passwordError != null) {
+      // Don't proceed if there are validation errors
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 1));
+      // Bypass authentication and go directly to dashboard
+      if (mounted) {
+        context.go(AppRoutes.dashboard);
+      }
+    } catch (e) {
+      // Handle any errors
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -105,6 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     AppTextField(
                       hintText: 'Email or Phone Number',
                       controller: _emailController,
+                      errorText: _emailPhoneError,
+                      onChanged: (_) => _validateEmailPhone(),
                     ),
 
                     const SizedBox(height: 23),
@@ -113,6 +211,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       hintText: 'Password',
                       controller: _passwordController,
                       obscureText: _obscurePassword,
+                      errorText: _passwordError,
+                      onChanged: (_) => _validatePassword(),
                       onToggleVisibility: () {
                         setState(() {
                           _obscurePassword = !_obscurePassword;
@@ -146,7 +246,29 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     // Sign In Button
                     AppButton(
-                      onPressed: _isLoading ? () {} : () => _handleSignIn(),
+                      onPressed:
+                          _isLoading
+                              ? null // Keep disabled during loading state
+                              : () {
+                                // Check validation before proceeding
+                                if (_emailPhoneError != null ||
+                                    _passwordError != null ||
+                                    _emailController.text.trim().isEmpty ||
+                                    _passwordController.text.trim().isEmpty) {
+                                  // Show validation message if inputs are incomplete
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Please complete all fields correctly',
+                                      ),
+                                      backgroundColor: AppColors.error,
+                                    ),
+                                  );
+                                } else {
+                                  // All inputs are valid, proceed with sign in
+                                  _handleSignIn();
+                                }
+                              },
                       text: 'Sign In',
                       isLoading: _isLoading,
                     ),

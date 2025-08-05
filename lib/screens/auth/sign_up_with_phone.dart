@@ -19,16 +19,19 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _phoneError;
+  String? _usernameError;
 
   @override
   void initState() {
     super.initState();
     _phoneController.addListener(_validatePhoneNumber);
+    _usernameController.addListener(_validateUsername);
   }
 
   @override
   void dispose() {
     _phoneController.removeListener(_validatePhoneNumber);
+    _usernameController.removeListener(_validateUsername);
     _phoneController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
@@ -45,6 +48,25 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
               ? null
               : 'Phone number must be in format +255XXXXXXXXX or 0XXXXXXXXX';
     });
+  }
+
+  void _validateUsername() {
+    final username = _usernameController.text.trim();
+    setState(() {
+      if (username.isEmpty) {
+        _usernameError = null;
+      } else if (_isUsernameValid(username)) {
+        _usernameError = null;
+      } else {
+        _usernameError =
+            'Username can only contain letters, spaces, underscores, apostrophes, and periods';
+      }
+    });
+  }
+
+  bool _isUsernameValid(String username) {
+    // Username can contain only letters, spaces, underscores, apostrophes, and periods (no numbers)
+    return RegExp(r"^[a-zA-Z_. ']+$").hasMatch(username);
   }
 
   bool _isPasswordValid(String password) {
@@ -65,14 +87,15 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
     return isValidPlus255 || isValidZero;
   }
 
-  String? _getPhoneErrorText() {
-    // Only show error if the field is not empty and is invalid
-    if (_phoneController.text.isNotEmpty &&
-        !_isPhoneNumberValid(_phoneController.text)) {
-      return 'Phone number must be in format +255XXXXXXXXX or 0XXXXXXXXX';
-    }
-    return null;
-  }
+  // This function is no longer used, we now use _phoneError directly
+  // String? _getPhoneErrorText() {
+  //   // Only show error if the field is not empty and is invalid
+  //   if (_phoneController.text.isNotEmpty &&
+  //       !_isPhoneNumberValid(_phoneController.text)) {
+  //     return 'Phone number must be in format +255XXXXXXXXX or 0XXXXXXXXX';
+  //   }
+  //   return null;
+  // }
 
   void _handleSignUp() async {
     // Validate phone number
@@ -98,10 +121,23 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
     }
 
     // Validate username
-    if (_usernameController.text.trim().isEmpty) {
+    final username = _usernameController.text.trim();
+    if (username.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a username'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    if (!_isUsernameValid(username)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Username can only contain letters, spaces, underscores, apostrophes, and periods',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -202,14 +238,26 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
                     AppTextField(
                       hintText: 'Public username',
                       controller: _usernameController,
+                      errorText: _usernameError,
+                      onChanged: (_) => _validateUsername(),
                     ),
 
                     // Username hint
                     const Padding(
                       padding: EdgeInsets.only(left: 4.0, top: 8.0),
-                      child: Text(
-                        '- You can\'t change your username so choose wisely.',
-                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '- You can\'t change your username so choose wisely.',
+                            style: TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            '- Only letters, spaces, underscores (_), apostrophes (\'), and periods (.) allowed.',
+                            style: TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                        ],
                       ),
                     ),
 

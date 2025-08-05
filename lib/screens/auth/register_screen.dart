@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
+import 'package:redeo_app/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -140,51 +142,69 @@ class RegisterScreen extends StatelessWidget {
   }
 
   Widget _buildGoogleSignInButton() {
-    return AppButton(
-      onPressed: () {
-        // Add Google sign-in logic here
-      },
-      text: 'Continue With Google',
-      icon: Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(2)),
-        child: Image.asset(
-          'assets/icons/google.png',
-          width: 20,
-          height: 20,
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            // Enhanced fallback with better Google-like styling
-            return Container(
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        return AppButton(
+          onPressed: authProvider.isLoading 
+            ? null
+            : () async {
+                final success = await authProvider.signInWithGoogle();
+                if (success && context.mounted) {
+                  // Navigate to the dashboard after successful Google sign-in
+                  context.go(AppRoutes.dashboard);
+                } else if (context.mounted && authProvider.errorMessage != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(authProvider.errorMessage!),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              },
+          text: 'Continue With Google',
+          isLoading: authProvider.isLoading,
+          icon: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(2)),
+            child: Image.asset(
+              'assets/icons/google.png',
               width: 20,
               height: 20,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(2),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFF4285F4), // Google blue
-                    Color(0xFF34A853), // Google green
-                    Color(0xFFFBBC05), // Google yellow
-                    Color(0xFFEA4335), // Google red
-                  ],
-                  stops: [0.0, 0.33, 0.66, 1.0],
-                ),
-              ),
-              child: const Center(
-                child: Text(
-                  'G',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                // Enhanced fallback with better Google-like styling
+                return Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(2),
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF4285F4), // Google blue
+                        Color(0xFF34A853), // Google green
+                        Color(0xFFFBBC05), // Google yellow
+                        Color(0xFFEA4335), // Google red
+                      ],
+                      stops: [0.0, 0.33, 0.66, 1.0],
+                    ),
                   ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+                  child: const Center(
+                    child: Text(
+                      'G',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

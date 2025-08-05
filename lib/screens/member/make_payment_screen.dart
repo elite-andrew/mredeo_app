@@ -21,6 +21,7 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
   String? _selectedContributionType;
   String? _selectedPaymentService;
   bool _isLoading = false;
+  String? _phoneError;
 
   final List<String> _contributionTypes = ['Condolences', 'Sickness', 'Yearly'];
 
@@ -33,10 +34,40 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _phoneController.addListener(_validatePhoneNumber);
+  }
+
+  @override
   void dispose() {
+    _phoneController.removeListener(_validatePhoneNumber);
     _amountController.dispose();
     _phoneController.dispose();
     super.dispose();
+  }
+
+  void _validatePhoneNumber() {
+    final phoneNumber = _phoneController.text.trim();
+    setState(() {
+      if (phoneNumber.isEmpty) {
+        _phoneError = null;
+      } else if (_isPhoneNumberValid(phoneNumber)) {
+        _phoneError = null;
+      } else {
+        _phoneError = '+255XXXXXXXXX or 0XXXXXXXXX';
+      }
+    });
+  }
+
+  bool _isPhoneNumberValid(String phoneNumber) {
+    // Validate +255 format followed by 9 digits
+    bool isValidPlus255 = RegExp(r'^\+255\d{9}$').hasMatch(phoneNumber);
+
+    // Validate 0 format followed by 9 digits
+    bool isValidZero = RegExp(r'^0\d{9}$').hasMatch(phoneNumber);
+
+    return isValidPlus255 || isValidZero;
   }
 
   void _handleConfirmPayment() async {
@@ -51,8 +82,15 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
       return;
     }
 
-    if (_phoneController.text.trim().isEmpty) {
+    // Validate phone number
+    final phoneNumber = _phoneController.text.trim();
+    if (phoneNumber.isEmpty) {
       _showSnackBar('Please enter a phone number');
+      return;
+    }
+
+    if (!_isPhoneNumberValid(phoneNumber)) {
+      _showSnackBar('Please enter a valid phone number');
       return;
     }
 
@@ -138,48 +176,13 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
                   const SizedBox(height: 24),
 
                   // Phone Number Field
-                  const Text(
-                    'Payment number',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceInput,
-                      borderRadius: BorderRadius.circular(13),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Row(
-                      children: [
-                        const Text(
-                          '+255',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            decoration: const InputDecoration(
-                              hintText: '_',
-                              hintStyle: TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 14,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.only(left: 8),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                  AppTextField(
+                    label: 'Payment number',
+                    hintText: '+255XXXXXXXXX or 0XXXXXXXXX',
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    errorText: _phoneError,
+                    onChanged: (_) => _validatePhoneNumber(),
                   ),
 
                   const SizedBox(height: 24),
@@ -202,7 +205,25 @@ class _MakePaymentScreenState extends State<MakePaymentScreen> {
                   // Confirm Payment Button
                   AppButton(
                     text: 'Confirm Payment',
-                    onPressed: _isLoading ? () {} : _handleConfirmPayment,
+                    onPressed:
+                        _isLoading
+                            ? null // Keep disabled during loading state
+                            : () {
+                              // Check validation before proceeding
+                              if (_phoneError != null ||
+                                  _selectedContributionType == null ||
+                                  _amountController.text.trim().isEmpty ||
+                                  _phoneController.text.trim().isEmpty ||
+                                  _selectedPaymentService == null) {
+                                // Show validation message if inputs are incomplete
+                                _showSnackBar(
+                                  'Please complete all required fields correctly',
+                                );
+                              } else {
+                                // All inputs are valid, proceed with payment
+                                _handleConfirmPayment();
+                              }
+                            },
                     isLoading: _isLoading,
                   ),
 

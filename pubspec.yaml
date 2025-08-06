@@ -12,6 +12,14 @@ dependencies:
     sdk: flutter
   go_router: ^13.1.0
   cupertino_icons: ^1.0.8
+  dio: ^5.3.2
+  flutter_secure_storage: ^9.0.0
+  provider: ^6.0.5
+  shared_preferences: ^2.2.2
+  connectivity_plus: ^5.0.1
+  image_picker: ^1.0.4  # For profile picture uploads
+  url_launcher: ^6.2.1  # For support links
+  package_info_plus: ^4.2.0  # For app version info
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:redeo_app/config/app_routes.dart';
+import 'package:redeo_app/providers/auth_provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -13,13 +15,25 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeApp();
+  }
 
-    // Simulate loading time then navigate safely
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        context.go(AppRoutes.login); // Safe navigation
+  Future<void> _initializeApp() async {
+    // Initialize authentication
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await authProvider.initializeAuth();
+
+    // Wait minimum splash time
+    await Future.delayed(const Duration(seconds: 2));
+
+    if (mounted) {
+      // Navigate based on auth state
+      if (authProvider.isLoggedIn) {
+        context.go(AppRoutes.dashboard);
+      } else {
+        context.go(AppRoutes.login);
       }
-    });
+    }
   }
 
   @override

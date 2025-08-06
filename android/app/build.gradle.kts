@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.redeo_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11

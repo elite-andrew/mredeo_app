@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/common/app_text_field.dart';
+import 'package:redeo_app/providers/auth_provider.dart';
 
 class SignUpWithPhoneScreen extends StatefulWidget {
   const SignUpWithPhoneScreen({super.key});
@@ -14,25 +16,30 @@ class SignUpWithPhoneScreen extends StatefulWidget {
 
 class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _phoneError;
+  String? _fullNameError;
   String? _usernameError;
 
   @override
   void initState() {
     super.initState();
     _phoneController.addListener(_validatePhoneNumber);
+    _fullNameController.addListener(_validateFullName);
     _usernameController.addListener(_validateUsername);
   }
 
   @override
   void dispose() {
     _phoneController.removeListener(_validatePhoneNumber);
+    _fullNameController.removeListener(_validateFullName);
     _usernameController.removeListener(_validateUsername);
     _phoneController.dispose();
+    _fullNameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -62,6 +69,25 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
             'Username can only contain letters, spaces, underscores, apostrophes, and periods';
       }
     });
+  }
+
+  void _validateFullName() {
+    final fullName = _fullNameController.text.trim();
+    setState(() {
+      if (fullName.isEmpty) {
+        _fullNameError = null;
+      } else if (_isFullNameValid(fullName)) {
+        _fullNameError = null;
+      } else {
+        _fullNameError =
+            'Full name can only contain letters, spaces, apostrophes, and periods';
+      }
+    });
+  }
+
+  bool _isFullNameValid(String fullName) {
+    // Full name can contain only letters, spaces, apostrophes, and periods
+    return RegExp(r"^[a-zA-Z. ']+$").hasMatch(fullName);
   }
 
   bool _isUsernameValid(String username) {
@@ -120,6 +146,30 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
       return;
     }
 
+    // Validate full name
+    final fullName = _fullNameController.text.trim();
+    if (fullName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your full name'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    if (!_isFullNameValid(fullName)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Full name can only contain letters, spaces, apostrophes, and periods',
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     // Validate username
     final username = _usernameController.text.trim();
     if (username.isEmpty) {
@@ -159,24 +209,54 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      // For now, just show success message and navigate to login
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-          backgroundColor: Color(0xFF2ECC71),
-        ),
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final result = await authProvider.signup(
+        fullName: fullName,
+        username: username,
+        phoneNumber: phoneNumber,
+        password: _passwordController.text,
       );
 
-      // Navigate to login screen
-      context.go(AppRoutes.login);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (result['success']) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                result['message'] ?? 'Account created successfully!',
+              ),
+              backgroundColor: const Color(0xFF2ECC71),
+            ),
+          );
+
+          // Navigate to OTP verification or login
+          context.go(AppRoutes.login);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message'] ?? 'Signup failed'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -230,6 +310,16 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
                       controller: _phoneController,
                       errorText: _phoneError,
                       keyboardType: TextInputType.phone,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Full Name Field
+                    AppTextField(
+                      hintText: 'Full Name',
+                      controller: _fullNameController,
+                      errorText: _fullNameError,
+                      onChanged: (_) => _validateFullName(),
                     ),
 
                     const SizedBox(height: 16),

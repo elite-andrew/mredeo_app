@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/common/app_text_field.dart';
+import 'package:redeo_app/providers/auth_provider.dart';
 
 class SignUpWithEmailScreen extends StatefulWidget {
   const SignUpWithEmailScreen({super.key});
@@ -14,25 +16,30 @@ class SignUpWithEmailScreen extends StatefulWidget {
 
 class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _emailError;
+  String? _fullNameError;
   String? _usernameError;
 
   @override
   void initState() {
     super.initState();
     _emailController.addListener(_validateEmail);
+    _fullNameController.addListener(_validateFullName);
     _usernameController.addListener(_validateUsername);
   }
 
   @override
   void dispose() {
     _emailController.removeListener(_validateEmail);
+    _fullNameController.removeListener(_validateFullName);
     _usernameController.removeListener(_validateUsername);
     _emailController.dispose();
+    _fullNameController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -69,6 +76,25 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
     });
   }
 
+  void _validateFullName() {
+    final fullName = _fullNameController.text.trim();
+    setState(() {
+      if (fullName.isEmpty) {
+        _fullNameError = null;
+      } else if (_isFullNameValid(fullName)) {
+        _fullNameError = null;
+      } else {
+        _fullNameError =
+            'Full name can only contain letters, spaces, apostrophes, and periods';
+      }
+    });
+  }
+
+  bool _isFullNameValid(String fullName) {
+    // Full name can contain only letters, spaces, apostrophes, and periods
+    return RegExp(r"^[a-zA-Z. ']+$").hasMatch(fullName);
+  }
+
   bool _isUsernameValid(String username) {
     // Username can contain only letters, spaces, underscores, apostrophes, and periods (no numbers)
     return RegExp(r"^[a-zA-Z_. ']+$").hasMatch(username);
@@ -89,6 +115,30 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a valid email address'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // Validate full name
+    final fullName = _fullNameController.text.trim();
+    if (fullName.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter your full name'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (!_isFullNameValid(fullName)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Full name can only contain letters, spaces, apostrophes, and periods',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -134,26 +184,56 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
-
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-
-      // For now, just show success message and navigate to login
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Account created successfully! Please check your email for verification.',
-          ),
-          backgroundColor: AppColors.primary,
-        ),
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final result = await authProvider.signup(
+        fullName: fullName,
+        username: username,
+        phoneNumber: null, // Email signup doesn't require phone
+        password: _passwordController.text,
+        email: email,
       );
 
-      // Navigate to login screen
-      context.go(AppRoutes.login);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (result['success']) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                result['message'] ??
+                    'Account created successfully! Please check your email for verification.',
+              ),
+              backgroundColor: AppColors.primary,
+            ),
+          );
+
+          // Navigate to login screen
+          context.go(AppRoutes.login);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message'] ?? 'Signup failed'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -217,6 +297,16 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
                         '- We\'ll send a verification link to this email.',
                         style: TextStyle(color: Colors.grey, fontSize: 13),
                       ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Full Name Field
+                    AppTextField(
+                      hintText: 'Full Name',
+                      controller: _fullNameController,
+                      errorText: _fullNameError,
+                      onChanged: (_) => _validateFullName(),
                     ),
 
                     const SizedBox(height: 16),

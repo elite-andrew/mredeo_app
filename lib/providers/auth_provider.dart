@@ -97,7 +97,7 @@ class AuthProvider with ChangeNotifier {
   Future<Map<String, dynamic>> signup({
     required String fullName,
     required String username,
-    required String phoneNumber,
+    String? phoneNumber,
     required String password,
     String? email,
   }) async {

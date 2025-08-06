@@ -12,21 +12,34 @@ class AuthService {
   Future<Map<String, dynamic>> signup({
     required String fullName,
     required String username,
-    required String phoneNumber,
+    String? phoneNumber,
     required String password,
     String? email,
   }) async {
+    // Validate that either phoneNumber or email is provided
+    if ((phoneNumber == null || phoneNumber.isEmpty) &&
+        (email == null || email.isEmpty)) {
+      return {
+        'success': false,
+        'message': 'Either phone number or email is required',
+      };
+    }
+
     try {
-      final response = await _apiService.post(
-        ApiEndpoints.signup,
-        data: {
-          'full_name': fullName,
-          'username': username,
-          'phone_number': phoneNumber,
-          'password': password,
-          if (email != null) 'email': email,
-        },
-      );
+      final Map<String, dynamic> data = {
+        'full_name': fullName,
+        'username': username,
+        'password': password,
+      };
+
+      if (phoneNumber != null && phoneNumber.isNotEmpty) {
+        data['phone_number'] = phoneNumber;
+      }
+      if (email != null && email.isNotEmpty) {
+        data['email'] = email;
+      }
+
+      final response = await _apiService.post(ApiEndpoints.signup, data: data);
 
       return {
         'success': true,

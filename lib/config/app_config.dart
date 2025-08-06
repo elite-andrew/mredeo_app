@@ -1,6 +1,8 @@
 class AppConfig {
   // API Configuration
-  static const String baseUrl = 'http://localhost:3000/api/v1';
+  // Replace 192.168.1.100 with the actual IP address of your backend PC
+  // Keep the port number that your backend is running on (5000, 3000, etc.)
+  static const String baseUrl = 'http://192.168.1.100:5000/api/v1';
   static const String apiVersion = 'v1';
   static const Duration apiTimeout = Duration(seconds: 30);
 

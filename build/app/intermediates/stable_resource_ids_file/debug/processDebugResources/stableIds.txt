@@ -1033,6 +1033,7 @@ com.example.redeo_app:attr/selectableItemBackgroundBorderless = 0x7f030116
 com.example.redeo_app:drawable/abc_edit_text_material = 0x7f070014
 com.example.redeo_app:attr/drawerArrowStyle = 0x7f030085
 com.example.redeo_app:attr/seekBarStyle = 0x7f030113
+com.example.redeo_app:xml/network_security_config = 0x7f100002
 com.example.redeo_app:id/title = 0x7f0800cb
 com.example.redeo_app:attr/textAppearanceSmallPopupMenu = 0x7f03014c
 com.example.redeo_app:styleable/SearchView = 0x7f0f0034

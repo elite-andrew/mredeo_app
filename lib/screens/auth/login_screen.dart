@@ -15,41 +15,51 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _identifierController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _obscurePassword = true;
-  String? _usernameError;
+  String? _identifierError;
   String? _passwordError;
 
   @override
   void initState() {
     super.initState();
-    _usernameController.addListener(_validateUsername);
+    _identifierController.addListener(_validateIdentifier);
     _passwordController.addListener(_validatePassword);
   }
 
   @override
   void dispose() {
-    _usernameController.removeListener(_validateUsername);
+    _identifierController.removeListener(_validateIdentifier);
     _passwordController.removeListener(_validatePassword);
-    _usernameController.dispose();
+    _identifierController.dispose();
     _passwordController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _validateUsername() {
-    final input = _usernameController.text.trim();
+  void _validateIdentifier() {
+    final input = _identifierController.text.trim();
     setState(() {
       if (input.isEmpty) {
-        _usernameError = null;
-      } else if (input.length < 3) {
-        _usernameError = 'Username must be at least 3 characters';
+        _identifierError = null;
+      } else if (_isValidEmailOrPhone(input)) {
+        _identifierError = null;
       } else {
-        _usernameError = null;
+        _identifierError = 'Please enter a valid email or phone number';
       }
     });
+  }
+
+  bool _isValidEmailOrPhone(String input) {
+    // Check if it's a valid email
+    bool isEmail = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(input);
+
+    // Check if it's a valid phone number (+255XXXXXXXXX or 0XXXXXXXXX)
+    bool isPhone = RegExp(r'^(\+255\d{9}|0\d{9})$').hasMatch(input);
+
+    return isEmail || isPhone;
   }
 
   void _validatePassword() {
@@ -67,16 +77,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleSignIn() async {
     // Validate inputs first
-    _validateUsername();
+    _validateIdentifier();
     _validatePassword();
 
-    final username = _usernameController.text.trim();
+    final identifier = _identifierController.text.trim();
     final password = _passwordController.text.trim();
 
     // Check if inputs are valid
-    if (username.isEmpty) {
+    if (identifier.isEmpty) {
       setState(() {
-        _usernameError = 'Username is required';
+        _identifierError = 'Email or phone number is required';
       });
       return;
     }
@@ -88,14 +98,14 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    if (_usernameError != null || _passwordError != null) {
+    if (_identifierError != null || _passwordError != null) {
       return;
     }
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     try {
-      final result = await authProvider.login(username, password);
+      final result = await authProvider.login(identifier, password);
 
       if (!mounted) return;
 
@@ -191,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Please enter your username and password.',
+                      'Please enter your email or phone and password.',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -207,10 +217,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         return Column(
                           children: [
                             AppTextField(
-                              hintText: 'Username',
-                              controller: _usernameController,
-                              errorText: _usernameError,
-                              onChanged: (_) => _validateUsername(),
+                              hintText: 'Email or Phone Number',
+                              controller: _identifierController,
+                              errorText: _identifierError,
+                              onChanged: (_) => _validateIdentifier(),
+                              keyboardType: TextInputType.emailAddress,
                             ),
 
                             const SizedBox(height: 23),
@@ -259,9 +270,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ? null
                                       : () {
                                         // Check validation before proceeding
-                                        if (_usernameError != null ||
+                                        if (_identifierError != null ||
                                             _passwordError != null ||
-                                            _usernameController.text
+                                            _identifierController.text
                                                 .trim()
                                                 .isEmpty ||
                                             _passwordController.text

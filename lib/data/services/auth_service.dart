@@ -87,13 +87,13 @@ class AuthService {
 
   // Login
   Future<Map<String, dynamic>> login({
-    required String username,
+    required String identifier,
     required String password,
   }) async {
     try {
       final response = await _apiService.post(
         ApiEndpoints.login,
-        data: {'username': username, 'password': password},
+        data: {'identifier': identifier, 'password': password},
       );
 
       if (response.data['data']?['requires_otp'] == true) {

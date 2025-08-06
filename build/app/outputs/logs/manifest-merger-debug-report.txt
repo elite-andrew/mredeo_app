@@ -1,6 +1,6 @@
 -- Merging decision tree log ---
 application
-INJECTED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:2:5-34:19
+INJECTED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:5:5-39:19
 INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml
 MERGED from [:image_picker_android] D:\Redeo_App\build\image_picker_android\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-32:19
 MERGED from [:image_picker_android] D:\Redeo_App\build\image_picker_android\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-32:19
@@ -25,8 +25,8 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\ei
 	android:name
 		INJECTED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml
 manifest
-ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:1:1-46:12
-MERGED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:1:1-46:12
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:1:1-51:12
+MERGED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:1:1-51:12
 INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml:1:1-7:12
@@ -102,22 +102,30 @@ MERGED from [com.getkeepsafe.relinker:relinker:1.4.5] C:\Users\einst\.gradle\cac
 		INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml
 	xmlns:android
 		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:1:11-69
-queries
-ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:40:5-45:15
-intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
-ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:41:9-44:18
-action#android.intent.action.PROCESS_TEXT
-ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:42:13-72
-	android:name
-		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:42:21-70
-data
-ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:43:13-50
-	android:mimeType
-		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:43:19-48
 uses-permission#android.permission.INTERNET
-ADDED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml:6:5-66
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:2:5-67
+MERGED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:2:5-67
+MERGED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:2:5-67
 	android:name
-		ADDED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml:6:22-64
+		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:2:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:3:5-79
+MERGED from [:connectivity_plus] D:\Redeo_App\build\connectivity_plus\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-79
+MERGED from [:connectivity_plus] D:\Redeo_App\build\connectivity_plus\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-79
+	android:name
+		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:3:22-76
+queries
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:45:5-50:15
+intent#action:name:android.intent.action.PROCESS_TEXT+data:mimeType:text/plain
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:46:9-49:18
+action#android.intent.action.PROCESS_TEXT
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:47:13-72
+	android:name
+		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:47:21-70
+data
+ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:48:13-50
+	android:mimeType
+		ADDED from D:\Redeo_App\android\app\src\main\AndroidManifest.xml:48:19-48
 uses-sdk
 INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\Redeo_App\android\app\src\debug\AndroidManifest.xml
@@ -302,10 +310,6 @@ ADDED from [:url_launcher_android] D:\Redeo_App\build\url_launcher_android\inter
 		ADDED from [:url_launcher_android] D:\Redeo_App\build\url_launcher_android\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-71
 	android:name
 		ADDED from [:url_launcher_android] D:\Redeo_App\build\url_launcher_android\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-74
-uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from [:connectivity_plus] D:\Redeo_App\build\connectivity_plus\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-79
-	android:name
-		ADDED from [:connectivity_plus] D:\Redeo_App\build\connectivity_plus\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:22-76
 uses-library#androidx.window.extensions
 ADDED from [androidx.window:window:1.2.0] C:\Users\einst\.gradle\caches\8.10.2\transforms\5093ab42d2307deb2d7ac0b7f5718c38\transformed\jetified-window-1.2.0\AndroidManifest.xml:23:9-25:40
 	android:required

@@ -34,12 +34,12 @@ class AuthProvider with ChangeNotifier {
   }
 
   // Login
-  Future<Map<String, dynamic>> login(String username, String password) async {
+  Future<Map<String, dynamic>> login(String identifier, String password) async {
     _setLoading(true);
     _clearError();
 
     final result = await _authService.login(
-      username: username,
+      identifier: identifier,
       password: password,
     );
 

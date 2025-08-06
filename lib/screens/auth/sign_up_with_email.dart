@@ -71,7 +71,7 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
         _usernameError = null;
       } else {
         _usernameError =
-            'Username can only contain letters, spaces, underscores, apostrophes, and periods';
+            'Username must be 3-50 characters with letters, numbers, and underscores only';
       }
     });
   }
@@ -85,19 +85,23 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
         _fullNameError = null;
       } else {
         _fullNameError =
-            'Full name can only contain letters, spaces, apostrophes, and periods';
+            'Full name must be 2-100 characters with letters, spaces, apostrophes, and periods only';
       }
     });
   }
 
   bool _isFullNameValid(String fullName) {
+    // Full name must be 2-100 characters (backend requirement)
+    if (fullName.length < 2 || fullName.length > 100) return false;
     // Full name can contain only letters, spaces, apostrophes, and periods
     return RegExp(r"^[a-zA-Z. ']+$").hasMatch(fullName);
   }
 
   bool _isUsernameValid(String username) {
-    // Username can contain only letters, spaces, underscores, apostrophes, and periods (no numbers)
-    return RegExp(r"^[a-zA-Z_. ']+$").hasMatch(username);
+    // Username must be 3-50 alphanumeric characters (letters and numbers)
+    // Backend expects alphanumeric, not just letters
+    if (username.length < 3 || username.length > 50) return false;
+    return RegExp(r"^[a-zA-Z0-9_]+$").hasMatch(username);
   }
 
   bool _isPasswordValid(String password) {
@@ -137,7 +141,7 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Full name can only contain letters, spaces, apostrophes, and periods',
+            'Full name must be 2-100 characters with letters, spaces, apostrophes, and periods only',
           ),
           backgroundColor: Colors.red,
         ),
@@ -161,7 +165,7 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Username can only contain letters, spaces, underscores, apostrophes, and periods',
+            'Username must be 3-50 characters with letters, numbers, and underscores only',
           ),
           backgroundColor: Colors.red,
         ),
@@ -331,7 +335,7 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
                           ),
                           SizedBox(height: 4),
                           Text(
-                            '- Only letters, spaces, underscores (_), apostrophes (\'), and periods (.) allowed.',
+                            '- Username must be 3-50 characters with letters, numbers, and underscores (_) only.',
                             style: TextStyle(color: Colors.grey, fontSize: 13),
                           ),
                         ],

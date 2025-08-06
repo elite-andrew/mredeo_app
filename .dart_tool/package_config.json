@@ -39,15 +39,15 @@
     },
     {
       "name": "connectivity_plus",
-      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/connectivity_plus-5.0.2",
+      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/connectivity_plus-6.1.4",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.2"
     },
     {
       "name": "connectivity_plus_platform_interface",
-      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/connectivity_plus_platform_interface-1.2.4",
+      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/connectivity_plus_platform_interface-2.0.1",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "cross_file",
@@ -189,9 +189,9 @@
     },
     {
       "name": "go_router",
-      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/go_router-13.2.5",
+      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/go_router-16.1.0",
       "packageUri": "lib/",
-      "languageVersion": "3.2"
+      "languageVersion": "3.6"
     },
     {
       "name": "http",
@@ -327,15 +327,15 @@
     },
     {
       "name": "package_info_plus",
-      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus-4.2.0",
+      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus-8.3.0",
       "packageUri": "lib/",
-      "languageVersion": "2.18"
+      "languageVersion": "3.3"
     },
     {
       "name": "package_info_plus_platform_interface",
-      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus_platform_interface-2.0.1",
+      "rootUri": "file:///C:/Users/einst/AppData/Local/Pub/Cache/hosted/pub.dev/package_info_plus_platform_interface-3.2.0",
       "packageUri": "lib/",
-      "languageVersion": "2.12"
+      "languageVersion": "2.18"
     },
     {
       "name": "path",
@@ -584,7 +584,7 @@
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-08-06T20:51:35.665171Z",
+  "generated": "2025-08-06T22:02:35.652522Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/flutter/src/flutter",

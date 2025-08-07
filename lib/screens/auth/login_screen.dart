@@ -123,6 +123,22 @@ class _LoginScreenState extends State<LoginScreen> {
           // Navigate to dashboard
           context.go(AppRoutes.dashboard);
         }
+      } else if (result['requiresVerification'] == true) {
+        // Account needs phone verification - show specific message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              result['message'] ?? 'Please verify your phone number',
+            ),
+            backgroundColor: AppColors.warning,
+            duration: const Duration(seconds: 5),
+            action: SnackBarAction(
+              label: 'Sign Up',
+              textColor: AppColors.surface,
+              onPressed: () => context.push(AppRoutes.register),
+            ),
+          ),
+        );
       } else {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(

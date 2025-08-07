@@ -13,6 +13,7 @@ import 'package:redeo_app/screens/auth/register_screen.dart';
 import 'package:redeo_app/screens/auth/reset_password_screen.dart';
 import 'package:redeo_app/screens/auth/sign_up_with_phone.dart';
 import 'package:redeo_app/screens/auth/sign_up_with_email.dart';
+import 'package:redeo_app/screens/auth/account_verification_screen.dart';
 import 'package:redeo_app/screens/common/splash_screen.dart';
 import 'package:redeo_app/screens/member/dashboard_screen.dart';
 import 'package:redeo_app/screens/member/loading_payment_screen.dart';
@@ -55,6 +56,18 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/sign_up_with_email',
       builder: (context, state) => const SignUpWithEmailScreen(),
+    ),
+    GoRoute(
+      path: '/account_verification',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return AccountVerificationScreen(
+          phoneNumber: extra?['phoneNumber'],
+          email: extra?['email'],
+          fullName: extra?['fullName'],
+          verificationType: extra?['verificationType'] ?? 'phone',
+        );
+      },
     ),
 
     //Member Screens Routes

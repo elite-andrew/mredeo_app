@@ -231,14 +231,22 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                result['message'] ?? 'Account created successfully!',
+                result['message'] ??
+                    'Account created successfully! Please verify your phone number.',
               ),
               backgroundColor: const Color(0xFF2ECC71),
             ),
           );
 
-          // Navigate to OTP verification or login
-          context.go(AppRoutes.login);
+          // Navigate to account verification screen
+          context.push(
+            AppRoutes.accountVerification,
+            extra: {
+              'phoneNumber': phoneNumber,
+              'fullName': fullName,
+              'verificationType': 'phone',
+            },
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

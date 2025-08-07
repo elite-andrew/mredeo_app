@@ -10,6 +10,7 @@ class AppRoutes {
   static const resetPassword = '/reset_password';
   static const signUpWithPhone = '/sign_up_with_phone';
   static const signUpWithEmail = '/sign_up_with_email';
+  static const accountVerification = '/account_verification';
 
   // Member
   static const dashboard = '/dashboard';
@@ -22,7 +23,6 @@ class AppRoutes {
   static const termsAndConditions = '/terms_and_conditions';
   static const transactionHistory = '/transaction';
   static const customerSupport = '/customer_support';
-
 
   // Admin
   static const adminDashboard = '/admin_dashboard';

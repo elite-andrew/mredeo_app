@@ -91,10 +91,22 @@ class AuthService {
     required String password,
   }) async {
     try {
+      developer.log(
+        'Attempting login with identifier: $identifier',
+        name: 'AuthService',
+      );
+
+      // Backend expects identifier field, not separate email/username
+      final requestData = {'identifier': identifier, 'password': password};
+
+      developer.log('Login request data: $requestData', name: 'AuthService');
+
       final response = await _apiService.post(
         ApiEndpoints.login,
-        data: {'identifier': identifier, 'password': password},
+        data: requestData,
       );
+
+      developer.log('Login response: ${response.data}', name: 'AuthService');
 
       if (response.data['data']?['requires_otp'] == true) {
         return {
@@ -117,6 +129,23 @@ class AuthService {
 
       return {'success': false, 'message': 'Login failed'};
     } catch (e) {
+      // Check if the error is about account verification
+      if (e is DioException &&
+          e.response?.data != null &&
+          e.response!.data['message'] != null) {
+        final errorMessage = e.response!.data['message'] as String;
+
+        // Handle account not active error specifically
+        if (errorMessage.contains('Account is not active') ||
+            errorMessage.contains('verify your phone number')) {
+          return {
+            'success': false,
+            'requiresVerification': true,
+            'message': errorMessage,
+          };
+        }
+      }
+
       return _handleError(e);
     }
   }
@@ -225,7 +254,15 @@ class AuthService {
   Map<String, dynamic> _handleError(dynamic error) {
     String message = 'An error occurred';
 
+    developer.log('API Error: $error', name: 'AuthService');
+
     if (error is DioException) {
+      developer.log('DioException type: ${error.type}', name: 'AuthService');
+      developer.log(
+        'DioException response: ${error.response}',
+        name: 'AuthService',
+      );
+
       if (error.response?.data != null &&
           error.response!.data['message'] != null) {
         message = error.response!.data['message'];
@@ -233,6 +270,8 @@ class AuthService {
         message = 'No internet connection';
       } else if (error.type == DioExceptionType.connectionTimeout) {
         message = 'Connection timeout';
+      } else if (error.response?.statusCode != null) {
+        message = 'Server error: ${error.response!.statusCode}';
       }
     }
 

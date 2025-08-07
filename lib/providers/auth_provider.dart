@@ -58,9 +58,20 @@ class AuthProvider with ChangeNotifier {
         return {'success': true, 'requiresOtp': false};
       }
     } else {
-      _setError(result['message']);
-      _setLoading(false);
-      return {'success': false, 'message': result['message']};
+      // Check if account needs verification
+      if (result['requiresVerification'] == true) {
+        _setError(result['message']);
+        _setLoading(false);
+        return {
+          'success': false,
+          'requiresVerification': true,
+          'message': result['message'],
+        };
+      } else {
+        _setError(result['message']);
+        _setLoading(false);
+        return {'success': false, 'message': result['message']};
+      }
     }
   }
 

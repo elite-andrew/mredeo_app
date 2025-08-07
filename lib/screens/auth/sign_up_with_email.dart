@@ -208,14 +208,22 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
             SnackBar(
               content: Text(
                 result['message'] ??
-                    'Account created successfully! Please check your email for verification.',
+                    'Account created successfully! Please check your email for verification code.',
               ),
               backgroundColor: AppColors.primary,
+              duration: const Duration(seconds: 4),
             ),
           );
 
-          // Navigate to login screen
-          context.go(AppRoutes.login);
+          // Navigate to account verification screen
+          context.push(
+            AppRoutes.accountVerification,
+            extra: {
+              'email': email,
+              'fullName': fullName,
+              'verificationType': 'email',
+            },
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

@@ -2,7 +2,6 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:redeo_app/config/app_config.dart';
 import 'package:redeo_app/data/services/auth_interceptor.dart';
 import 'package:redeo_app/data/services/retry_interceptor.dart';
@@ -64,14 +63,14 @@ class ApiService {
     if (AppConfig.enableLogging) {
       _dio.interceptors.add(
         LogInterceptor(
-          requestBody: false, // Disable request body logging for performance
-          responseBody: false, // Disable response body logging for performance
+          requestBody: true, // Enable request body logging to debug login
+          responseBody: true, // Enable response body logging to debug login
           logPrint: (obj) {
             if (AppConfig.enableLogging) {
               developer.log(obj.toString(), name: 'ApiService');
             }
           },
-          requestHeader: false,
+          requestHeader: true, // Enable headers for debugging
           responseHeader: false,
         ),
       );
@@ -220,35 +219,10 @@ class ApiService {
   }
 
   // Optimized connectivity check with caching
-  static ConnectivityResult? _lastConnectivityResult;
-  static DateTime? _lastConnectivityCheck;
 
   Future<void> _checkConnectivity() async {
-    final now = DateTime.now();
-
-    // Cache connectivity result for 5 seconds to avoid frequent checks
-    if (_lastConnectivityCheck != null &&
-        now.difference(_lastConnectivityCheck!).inSeconds < 5) {
-      if (_lastConnectivityResult == ConnectivityResult.none) {
-        throw DioException(
-          requestOptions: RequestOptions(path: ''),
-          type: DioExceptionType.connectionError,
-          message: 'No internet connection',
-        );
-      }
-      return;
-    }
-
-    _lastConnectivityCheck = now;
-    _lastConnectivityResult = await Connectivity().checkConnectivity();
-
-    if (_lastConnectivityResult == ConnectivityResult.none) {
-      throw DioException(
-        requestOptions: RequestOptions(path: ''),
-        type: DioExceptionType.connectionError,
-        message: 'No internet connection',
-      );
-    }
+    // Temporarily disabled connectivity check for debugging
+    return;
   }
 
   // Clear connection pool

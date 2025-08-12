@@ -276,8 +276,8 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
   }
 
   String _getInitials(String name) {
-    final parts = name.split(' ');
-    if (parts.length >= 2) {
+    final parts = name.split(' ').where((p) => p.isNotEmpty).toList();
+    if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
       return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
     }
     return name.isNotEmpty ? name[0].toUpperCase() : '?';

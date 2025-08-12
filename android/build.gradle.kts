@@ -1,10 +1,3 @@
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 val newBuildDir: Directory = rootProject.layout.buildDirectory.dir("../../build").get()
 rootProject.layout.buildDirectory.value(newBuildDir)
 
@@ -14,6 +7,15 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
+
+// Ensure Flutter engine artifacts can be resolved if any module declares its own repos
+subprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven(url = uri("https://storage.googleapis.com/download.flutter.io"))
+    }
 }
 
 tasks.register<Delete>("clean") {

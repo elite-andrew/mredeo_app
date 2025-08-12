@@ -87,10 +87,10 @@ class User {
   bool get isMember => role == 'member';
 
   String get initials {
-    final names = fullName.split(' ');
-    if (names.length >= 2) {
+    final names = fullName.split(' ').where((n) => n.isNotEmpty).toList();
+    if (names.length >= 2 && names[0].isNotEmpty && names[1].isNotEmpty) {
       return '${names[0][0]}${names[1][0]}'.toUpperCase();
-    } else if (names.isNotEmpty) {
+    } else if (names.isNotEmpty && names[0].isNotEmpty) {
       return names[0][0].toUpperCase();
     }
     return 'U';

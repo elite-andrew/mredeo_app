@@ -93,6 +93,16 @@ class FirebaseAuthService {
       String? verificationId;
       int? latestResendToken;
       final completer = Completer<Map<String, dynamic>>();
+      // Safety fallback: don't let the UI hang forever if no callbacks arrive
+      Timer(const Duration(seconds: 45), () {
+        if (!completer.isCompleted) {
+          completer.complete({
+            'success': false,
+            'message':
+                'Network timeout. Please check your connection and try again.',
+          });
+        }
+      });
 
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -126,6 +136,16 @@ class FirebaseAuthService {
         },
         codeAutoRetrievalTimeout: (String verId) {
           verificationId = verId;
+          // If we got a verificationId but never delivered codeSent, still allow OTP entry
+          if (!completer.isCompleted) {
+            completer.complete({
+              'success': true,
+              'requiresOtp': true,
+              'verificationId': verificationId,
+              'resendToken': latestResendToken,
+              'message': 'Enter the code sent to your phone number',
+            });
+          }
         },
       );
 
@@ -146,6 +166,15 @@ class FirebaseAuthService {
       String? verificationId;
       int? latestResendToken;
       final completer = Completer<Map<String, dynamic>>();
+      // Safety fallback timer
+      Timer(const Duration(seconds: 45), () {
+        if (!completer.isCompleted) {
+          completer.complete({
+            'success': false,
+            'message': 'Network timeout. Please try again.',
+          });
+        }
+      });
 
       await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
@@ -169,6 +198,14 @@ class FirebaseAuthService {
         },
         codeAutoRetrievalTimeout: (String verId) {
           verificationId = verId;
+          if (!completer.isCompleted) {
+            completer.complete({
+              'success': true,
+              'verificationId': verificationId,
+              'resendToken': latestResendToken,
+              'message': 'You can enter the code now',
+            });
+          }
         },
       );
 

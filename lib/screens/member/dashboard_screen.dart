@@ -85,8 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   contributionType,
                                   paymentProvider.paymentHistory,
                                 ),
-                              )
-                              ,
+                              ),
 
                           const SizedBox(height: 40),
 
@@ -231,7 +230,11 @@ class HeaderSection extends StatelessWidget {
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     Text(
-                      user?.fullName.split(' ').first ?? 'User',
+                      user?.fullName
+                              .split(' ')
+                              .where((n) => n.isNotEmpty)
+                              .firstOrNull ??
+                          'User',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,

@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:redeo_app/config/app_config.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb;
 
 class AuthInterceptor extends Interceptor {
   final Dio _dio;
@@ -14,11 +15,26 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    // Add access token to requests (except auth endpoints)
+    // Add Firebase ID token when available; fallback to legacy token
     if (!_isAuthEndpoint(options.path)) {
-      final accessToken = await _storage.read(key: AppConfig.accessTokenKey);
-      if (accessToken != null) {
-        options.headers['Authorization'] = 'Bearer $accessToken';
+      try {
+        final user = fb.FirebaseAuth.instance.currentUser;
+        final idToken = await user?.getIdToken();
+        if (idToken != null) {
+          options.headers['Authorization'] = 'Bearer $idToken';
+        } else {
+          final accessToken = await _storage.read(
+            key: AppConfig.accessTokenKey,
+          );
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          }
+        }
+      } catch (e) {
+        developer.log(
+          'Failed to obtain Firebase ID token: $e',
+          name: 'AuthInterceptor',
+        );
       }
     }
     handler.next(options);
@@ -28,10 +44,33 @@ class AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401 &&
         !_isAuthEndpoint(err.requestOptions.path)) {
-      // Try to refresh token
+      // Try Firebase token refresh and retry once
+      try {
+        final user = fb.FirebaseAuth.instance.currentUser;
+        final idToken = await user?.getIdToken(true);
+        if (idToken != null) {
+          err.requestOptions.headers['Authorization'] = 'Bearer $idToken';
+          final clonedRequest = await _dio.request(
+            err.requestOptions.path,
+            options: Options(
+              method: err.requestOptions.method,
+              headers: err.requestOptions.headers,
+            ),
+            data: err.requestOptions.data,
+            queryParameters: err.requestOptions.queryParameters,
+          );
+          handler.resolve(clonedRequest);
+          return;
+        }
+      } catch (e) {
+        developer.log(
+          'Firebase token refresh failed: $e',
+          name: 'AuthInterceptor',
+        );
+      }
+      // Fallback to legacy behavior
       final refreshed = await _refreshToken();
       if (refreshed) {
-        // Retry the original request
         try {
           final clonedRequest = await _dio.request(
             err.requestOptions.path,
@@ -48,7 +87,6 @@ class AuthInterceptor extends Interceptor {
           developer.log('Retry request failed: $e', name: 'AuthInterceptor');
         }
       } else {
-        // Refresh failed, logout user
         await _clearTokens();
       }
     }
@@ -59,7 +97,6 @@ class AuthInterceptor extends Interceptor {
     final authPaths = [
       ApiEndpoints.login,
       ApiEndpoints.signup,
-      ApiEndpoints.verifyOTP,
       ApiEndpoints.forgotPassword,
       ApiEndpoints.resetPassword,
       ApiEndpoints.refreshToken,

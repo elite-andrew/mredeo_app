@@ -1,17 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:redeo_app/config/app_routes.dart';
+import 'package:redeo_app/providers/auth_provider.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 
-class ForgotPasswordScreen extends StatelessWidget {
+class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
+
+  @override
+  State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+}
+
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final _emailController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendResetEmail() async {
+    final email = _emailController.text.trim();
+    final emailRegex = RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,}$');
+    if (email.isEmpty || !emailRegex.hasMatch(email)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address')),
+      );
+      return;
+    }
+    if (mounted) setState(() => _isLoading = true);
+    final authProvider = context.read<AuthProvider>();
+    final res = await authProvider.forgotPasswordByEmail(email);
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    if (res['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(res['message'] ?? 'Password reset email sent')),
+      );
+      context.go(AppRoutes.login);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(res['message'] ?? 'Failed to send reset email')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // Top App Bar with back button
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -42,9 +84,10 @@ class ForgotPasswordScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(13),
                   border: Border.all(color: Colors.black38),
                 ),
-                child: const TextField(
+                child: TextField(
+                  controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Email',
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 14),
                     border: InputBorder.none,
@@ -64,12 +107,10 @@ class ForgotPasswordScreen extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // Send Button
+              // Send password reset email via Firebase
               AppButton(
-                text: 'Send',
-                onPressed: () {
-                  context.go(AppRoutes.otpScreen);
-                },
+                text: _isLoading ? 'Sending...' : 'Send',
+                onPressed: _isLoading ? null : _sendResetEmail,
               ),
             ],
           ),

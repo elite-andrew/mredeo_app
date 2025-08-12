@@ -8,7 +8,6 @@ import 'package:redeo_app/screens/admin/payment_report_screen.dart';
 import 'package:redeo_app/screens/auth/forgot_password_screen.dart';
 
 import 'package:redeo_app/screens/auth/login_screen.dart';
-import 'package:redeo_app/screens/auth/otp_screen.dart';
 import 'package:redeo_app/screens/auth/register_screen.dart';
 import 'package:redeo_app/screens/auth/reset_password_screen.dart';
 import 'package:redeo_app/screens/auth/sign_up_with_phone.dart';
@@ -38,10 +37,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
-      path: '/otp_screen',
-      builder: (context, state) => const OtpScreen(),
-    ),
-    GoRoute(
       path: '/register',
       builder: (context, state) => const RegisterScreen(),
     ),
@@ -66,6 +61,8 @@ final GoRouter appRouter = GoRouter(
           email: extra?['email'],
           fullName: extra?['fullName'],
           verificationType: extra?['verificationType'] ?? 'phone',
+          verificationId: extra?['verificationId'],
+          purpose: extra?['purpose'],
         );
       },
     ),

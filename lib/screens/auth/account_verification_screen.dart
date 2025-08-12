@@ -1,17 +1,20 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/providers/auth_provider.dart';
+import 'package:redeo_app/widgets/common/app_button.dart';
 
 class AccountVerificationScreen extends StatefulWidget {
   final String? phoneNumber;
   final String? email;
   final String? fullName;
   final String verificationType; // 'phone' or 'email'
+  final String? verificationId; // Firebase phone verification id
+  final String? purpose; // 'login' or null (signup)
 
   const AccountVerificationScreen({
     super.key,
@@ -19,6 +22,8 @@ class AccountVerificationScreen extends StatefulWidget {
     this.email,
     this.fullName,
     required this.verificationType,
+    this.verificationId,
+    this.purpose,
   });
 
   @override
@@ -35,59 +40,77 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
   bool _isLoading = false;
   bool _isResending = false;
   String? _errorMessage;
+  String? _currentVerificationId;
+  int _resendSecondsRemaining = 0;
+  Timer? _resendTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentVerificationId = widget.verificationId;
+    if (widget.verificationType == 'phone') {
+      _startResendCountdown(seconds: 60);
+    }
+  }
 
   @override
   void dispose() {
-    for (var controller in _otpControllers) {
-      controller.dispose();
+    for (final c in _otpControllers) {
+      c.dispose();
     }
-    for (var focusNode in _focusNodes) {
-      focusNode.dispose();
+    for (final n in _focusNodes) {
+      n.dispose();
     }
+    _resendTimer?.cancel();
     super.dispose();
   }
 
-  String get _otpCode {
-    return _otpControllers.map((controller) => controller.text).join();
+  void _startResendCountdown({int seconds = 60}) {
+    _resendTimer?.cancel();
+    setState(() => _resendSecondsRemaining = seconds);
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      if (_resendSecondsRemaining <= 1) {
+        timer.cancel();
+        setState(() => _resendSecondsRemaining = 0);
+      } else {
+        setState(() => _resendSecondsRemaining -= 1);
+      }
+    });
   }
 
-  bool get _isOtpComplete {
-    return _otpCode.length == 6;
-  }
+  String get _otpCode => _otpControllers.map((c) => c.text).join();
+  bool get _isOtpComplete => _otpCode.length == 6;
 
   void _clearOtp() {
-    for (var controller in _otpControllers) {
-      controller.clear();
+    for (final c in _otpControllers) {
+      c.clear();
     }
-    _focusNodes[0].requestFocus();
+    _focusNodes.first.requestFocus();
   }
 
   void _onOtpChanged(String value, int index) {
     if (value.length == 1) {
-      // Move to next field
       if (index < 5) {
         _focusNodes[index + 1].requestFocus();
       } else {
         _focusNodes[index].unfocus();
+        if (_isOtpComplete && !_isLoading) {
+          _handleVerification();
+        }
       }
     } else if (value.isEmpty && index > 0) {
-      // Move to previous field on backspace
       _focusNodes[index - 1].requestFocus();
     }
 
-    // Clear error when user starts typing
     if (_errorMessage != null) {
-      setState(() {
-        _errorMessage = null;
-      });
+      setState(() => _errorMessage = null);
     }
   }
 
   Future<void> _handleVerification() async {
     if (!_isOtpComplete) {
-      setState(() {
-        _errorMessage = 'Please enter the complete OTP';
-      });
+      setState(() => _errorMessage = 'Please enter the complete OTP');
       return;
     }
 
@@ -98,36 +121,70 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final result = await authProvider.verifySignupOtp(
-        widget.phoneNumber ?? widget.email ?? '',
-        _otpCode,
-      );
 
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        if (result['success']) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Account verified successfully! You can now login.',
-              ),
-              backgroundColor: AppColors.primary,
-              duration: Duration(seconds: 3),
-            ),
-          );
-
-          // Navigate to login screen
-          context.go(AppRoutes.login);
-        } else {
+      if (widget.verificationType == 'phone') {
+        final isLogin = (widget.purpose == 'login');
+        final verificationId =
+            _currentVerificationId ?? widget.verificationId ?? '';
+        final fbRes =
+            isLogin
+                ? await authProvider.confirmPhoneLoginOtp(
+                  verificationId: verificationId,
+                  smsCode: _otpCode,
+                )
+                : await authProvider.confirmPhoneSignupOtp(
+                  verificationId: verificationId,
+                  smsCode: _otpCode,
+                );
+        if (!mounted) return;
+        if (fbRes['success'] != true) {
           setState(() {
-            _errorMessage = result['message'] ?? 'Verification failed';
+            _isLoading = false;
+            _errorMessage = fbRes['message'] ?? 'Verification failed';
           });
           _clearOtp();
+          return;
         }
+        if (isLogin) {
+          setState(() => _isLoading = false);
+          context.go(AppRoutes.dashboard);
+        } else {
+          final backendRes = await authProvider.completePhoneSignup();
+          if (!mounted) return;
+          setState(() => _isLoading = false);
+          if (backendRes['success'] == true) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Account verified successfully! You can now login.',
+                ),
+                backgroundColor: AppColors.primary,
+                duration: Duration(seconds: 3),
+              ),
+            );
+            context.go(AppRoutes.login);
+          } else {
+            setState(
+              () =>
+                  _errorMessage =
+                      backendRes['message'] ?? 'Verification failed',
+            );
+            _clearOtp();
+          }
+        }
+      } else {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Check your email for the verification link and then log in.',
+            ),
+            backgroundColor: AppColors.primary,
+            duration: Duration(seconds: 3),
+          ),
+        );
+        context.go(AppRoutes.login);
       }
     } catch (e) {
       if (mounted) {
@@ -147,27 +204,37 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
     });
 
     try {
-      // For now, we'll show a message. In a real app, you'd call a resend OTP API
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (mounted) {
-        setState(() {
-          _isResending = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.verificationType == 'email'
-                  ? 'OTP has been resent to your email address'
-                  : 'OTP has been resent to your phone number',
+      if (widget.verificationType == 'phone') {
+        final authProvider = context.read<AuthProvider>();
+        final res = await authProvider.resendPhoneOtp();
+        if (!mounted) return;
+        setState(() => _isResending = false);
+        if (res['success'] == true) {
+          final newId = res['verificationId'] as String?;
+          if (newId != null) {
+            setState(() => _currentVerificationId = newId);
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('OTP resent to your phone number'),
+              backgroundColor: AppColors.primary,
+              duration: Duration(seconds: 3),
             ),
-            backgroundColor: AppColors.primary,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-        _clearOtp();
+          );
+          _clearOtp();
+          _startResendCountdown(seconds: 60);
+          return;
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(res['message'] ?? 'Failed to resend OTP'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+        }
       }
+
+      if (mounted) setState(() => _isResending = false);
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -206,13 +273,11 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 40),
-
-              // Verification Icon
               Container(
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -221,10 +286,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                   size: 40,
                 ),
               ),
-
               const SizedBox(height: 32),
-
-              // Title
               const Text(
                 'Verify Your Account',
                 style: TextStyle(
@@ -234,13 +296,10 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               const SizedBox(height: 16),
-
-              // Description
               Text(
                 widget.verificationType == 'email'
-                    ? 'We have sent a 6-digit verification code to\n${widget.email}'
+                    ? 'We sent a verification link to\n${widget.email}\nOpen the email and tap the link to continue.'
                     : 'We have sent a 6-digit verification code to\n${widget.phoneNumber}',
                 style: TextStyle(
                   fontSize: 16,
@@ -249,7 +308,6 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 ),
                 textAlign: TextAlign.center,
               ),
-
               if (widget.fullName != null) ...[
                 const SizedBox(height: 8),
                 Text(
@@ -262,10 +320,7 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                   textAlign: TextAlign.center,
                 ),
               ],
-
               const SizedBox(height: 40),
-
-              // OTP Input Fields
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(6, (index) {
@@ -317,16 +372,13 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                           ),
                         ),
                       ),
-                      onChanged: (value) => _onOtpChanged(value, index),
+                      onChanged: (v) => _onOtpChanged(v, index),
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                   );
                 }),
               ),
-
               const SizedBox(height: 24),
-
-              // Error Message
               if (_errorMessage != null) ...[
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -334,9 +386,11 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.error.withOpacity(0.1),
+                    color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                    border: Border.all(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -360,18 +414,13 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                 ),
                 const SizedBox(height: 24),
               ],
-
-              // Verify Button
               AppButton(
                 text: _isLoading ? 'Verifying...' : 'Verify Account',
                 onPressed:
                     _isLoading || !_isOtpComplete ? null : _handleVerification,
                 isLoading: _isLoading,
               ),
-
               const SizedBox(height: 24),
-
-              // Resend OTP
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -383,14 +432,21 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: _isResending ? null : _handleResendOtp,
+                    onTap:
+                        (_isResending || _resendSecondsRemaining > 0)
+                            ? null
+                            : _handleResendOtp,
                     child: Text(
-                      _isResending ? 'Resending...' : 'Resend',
+                      _isResending
+                          ? 'Resending...'
+                          : (_resendSecondsRemaining > 0
+                              ? 'Resend in ${_resendSecondsRemaining}s'
+                              : 'Resend'),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color:
-                            _isResending
+                            (_isResending || _resendSecondsRemaining > 0)
                                 ? AppColors.textSecondary
                                 : AppColors.primary,
                       ),
@@ -398,16 +454,15 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 32),
-
-              // Help Text
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.05),
+                  color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -445,7 +500,6 @@ class _AccountVerificationScreenState extends State<AccountVerificationScreen> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),

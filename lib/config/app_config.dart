@@ -1,8 +1,16 @@
 class AppConfig {
   // API Configuration
-  // Replace 192.168.1.100 with the actual IP address of your backend PC
-  // Keep the port number that your backend is running on (5000, 3000, etc.)
-  static const String baseUrl = 'http://192.168.5.45:3000/api/v1';
+  // Configure with --dart-define=API_HOST=... and --dart-define=API_PORT=...
+  // Defaults assume your backend is on your LAN at 192.168.5.45:3000
+  static String get baseUrl {
+    const host = String.fromEnvironment(
+      'API_HOST',
+      defaultValue: '192.168.5.45',
+    );
+    const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
+    return 'http://$host:$port/api/v1';
+  }
+
   static const String apiVersion = 'v1';
   static const Duration apiTimeout = Duration(seconds: 30);
 
@@ -54,7 +62,6 @@ class ApiEndpoints {
   // Authentication
   static const String login = '/auth/login';
   static const String signup = '/auth/signup';
-  static const String verifyOTP = '/auth/verify-otp';
   static const String forgotPassword = '/auth/forgot-password';
   static const String resetPassword = '/auth/reset-password';
   static const String refreshToken = '/auth/refresh-token';

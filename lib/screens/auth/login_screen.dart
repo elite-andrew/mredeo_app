@@ -111,14 +111,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (result['success']) {
         if (result['requiresOtp']) {
-          // Navigate to OTP screen
-          context.push(
-            AppRoutes.otpScreen,
-            extra: {
-              'phoneNumber': authProvider.phoneNumber,
-              'purpose': 'login',
-            },
+          final phone = authProvider.phoneNumber ?? identifier;
+          // Start Firebase phone verification for login
+          final startRes = await authProvider.startPhoneLoginVerification(
+            phoneNumber: phone,
           );
+          if (!mounted) return;
+          if (startRes['success'] == true) {
+            final verificationId = startRes['verificationId'] as String?;
+            context.push(
+              AppRoutes.accountVerification,
+              extra: {
+                'phoneNumber': phone,
+                'fullName': null,
+                'verificationType': 'phone',
+                'verificationId': verificationId,
+                'purpose': 'login',
+              },
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(startRes['message'] ?? 'Failed to send OTP'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
         } else {
           // Navigate to dashboard
           context.go(AppRoutes.dashboard);

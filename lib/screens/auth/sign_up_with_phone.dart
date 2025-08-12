@@ -215,11 +215,18 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final result = await authProvider.signup(
+
+      // Cache details to complete backend signup after Firebase verification
+      authProvider.setPendingPhoneSignup(
         fullName: fullName,
         username: username,
-        phoneNumber: phoneNumber,
         password: _passwordController.text,
+        phoneNumber: phoneNumber,
+      );
+
+      // Start Firebase phone verification
+      final startRes = await authProvider.startPhoneSignupVerification(
+        phoneNumber: phoneNumber,
       );
 
       if (mounted) {
@@ -227,30 +234,27 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
           _isLoading = false;
         });
 
-        if (result['success']) {
+        if (startRes['success'] == true) {
+          final verificationId = startRes['verificationId'] as String?;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                result['message'] ??
-                    'Account created successfully! Please verify your phone number.',
-              ),
-              backgroundColor: const Color(0xFF2ECC71),
+            const SnackBar(
+              content: Text('OTP sent to your phone number'),
+              backgroundColor: AppColors.primary,
             ),
           );
-
-          // Navigate to account verification screen
           context.push(
             AppRoutes.accountVerification,
             extra: {
               'phoneNumber': phoneNumber,
               'fullName': fullName,
               'verificationType': 'phone',
+              'verificationId': verificationId,
             },
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Signup failed'),
+              content: Text(startRes['message'] ?? 'Failed to send OTP'),
               backgroundColor: AppColors.error,
             ),
           );

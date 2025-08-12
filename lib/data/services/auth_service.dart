@@ -51,40 +51,6 @@ class AuthService {
     }
   }
 
-  // Verify OTP
-  Future<Map<String, dynamic>> verifyOtp({
-    required String phoneNumber,
-    required String otpCode,
-    required String purpose,
-  }) async {
-    try {
-      final response = await _apiService.post(
-        ApiEndpoints.verifyOTP,
-        data: {
-          'phone_number': phoneNumber,
-          'otp_code': otpCode,
-          'purpose': purpose,
-        },
-      );
-
-      // If login OTP or signup OTP, store tokens if provided
-      if (response.data['data']?['tokens'] != null) {
-        await _storeTokens(response.data['data']['tokens']);
-        if (response.data['data']['user'] != null) {
-          await _storeUserData(response.data['data']['user']);
-        }
-      }
-
-      return {
-        'success': true,
-        'data': response.data,
-        'message': 'OTP verified successfully',
-      };
-    } catch (e) {
-      return _handleError(e);
-    }
-  }
-
   // Login
   Future<Map<String, dynamic>> login({
     required String identifier,

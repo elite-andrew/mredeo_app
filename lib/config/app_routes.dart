@@ -16,6 +16,8 @@ class AppRoutes {
   static const loadingPayment = '/loading_payment';
   static const makePayment = '/make_payment';
   static const memberProfile = '/member_profile';
+  static const editProfile = '/edit_profile';
+  static const changePassword = '/change_password';
   static const notifications = '/notifications';
   static const paymentStatus = '/payment_status';
   static const settings = '/settings';

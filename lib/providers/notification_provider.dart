@@ -88,8 +88,8 @@ class NotificationProvider with ChangeNotifier {
   Future<void> loadUnreadCount() async {
     final result = await _notificationService.getUnreadCount();
 
-    if (result['success']) {
-      _unreadCount = result['data']['data']['count'] ?? 0;
+    if (result['success'] && result['data'] != null) {
+      _unreadCount = result['data']['count'] ?? 0;
       notifyListeners();
     }
   }

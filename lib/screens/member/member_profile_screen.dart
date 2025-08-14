@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:redeo_app/widgets/common/custom_app_bar.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
+import 'package:redeo_app/widgets/specific/clickable_profile_picture.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/providers/auth_provider.dart';
 import 'package:redeo_app/providers/profile_provider.dart';
+import 'package:redeo_app/config/app_routes.dart';
 
 class MemberProfileScreen extends StatefulWidget {
   const MemberProfileScreen({super.key});
@@ -23,11 +26,21 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    final profileProvider = Provider.of<ProfileProvider>(
-      context,
-      listen: false,
-    );
-    await profileProvider.loadProfile();
+    try {
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+      // Set up connection between providers for cross-updates
+      profileProvider.setAuthProvider(authProvider);
+
+      await profileProvider.loadProfile();
+    } catch (e) {
+      // Handle provider access errors gracefully
+      debugPrint('Error loading profile: $e');
+    }
   }
 
   @override
@@ -116,24 +129,14 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
                         child: Column(
                           children: [
                             // Profile Picture
-                            CircleAvatar(
+                            ClickableProfilePicture(
+                              user: user,
                               radius: 50,
-                              backgroundColor: AppColors.primary,
-                              backgroundImage:
-                                  user.profilePicture != null
-                                      ? NetworkImage(user.profilePicture!)
-                                      : null,
-                              child:
-                                  user.profilePicture == null
-                                      ? Text(
-                                        _getInitials(user.fullName),
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                      : null,
+                              enableEdit: true,
+                              onImageChanged: () {
+                                // Reload profile to update the UI
+                                _loadProfile();
+                              },
                             ),
                             const SizedBox(height: 16),
 
@@ -209,18 +212,6 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
                         ),
                       ),
 
-                      const SizedBox(height: 12),
-
-                      AppButton(
-                        text: 'Update Settings',
-                        onPressed: () => _updateSettings(profileProvider),
-                        icon: Icon(
-                          Icons.settings,
-                          color: AppColors.textPrimary,
-                          size: 18,
-                        ),
-                      ),
-
                       const SizedBox(height: 30),
                     ],
                   ),
@@ -275,14 +266,6 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
     );
   }
 
-  String _getInitials(String name) {
-    final parts = name.split(' ').where((p) => p.isNotEmpty).toList();
-    if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    }
-    return name.isNotEmpty ? name[0].toUpperCase() : '?';
-  }
-
   String _formatRole(String role) {
     switch (role.toLowerCase()) {
       case 'member':
@@ -317,32 +300,10 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
   }
 
   void _editProfile(ProfileProvider profileProvider) {
-    // TODO: Navigate to edit profile screen or show edit dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit profile feature will be implemented next'),
-        backgroundColor: AppColors.primary,
-      ),
-    );
+    context.push(AppRoutes.editProfile);
   }
 
   void _changePassword(ProfileProvider profileProvider) {
-    // TODO: Navigate to change password screen or show change password dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Change password feature will be implemented next'),
-        backgroundColor: AppColors.primary,
-      ),
-    );
-  }
-
-  void _updateSettings(ProfileProvider profileProvider) {
-    // TODO: Navigate to settings screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Settings feature will be implemented next'),
-        backgroundColor: AppColors.primary,
-      ),
-    );
+    context.push(AppRoutes.changePassword);
   }
 }

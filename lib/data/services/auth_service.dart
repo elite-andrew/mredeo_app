@@ -11,7 +11,7 @@ class AuthService {
   // Register new user
   Future<Map<String, dynamic>> signup({
     required String fullName,
-    required String username,
+    String? username, // Optional since backend generates it
     String? phoneNumber,
     required String password,
     String? email,
@@ -28,9 +28,14 @@ class AuthService {
     try {
       final Map<String, dynamic> data = {
         'full_name': fullName,
-        'username': username,
         'password': password,
       };
+
+      // Only include username if it's provided (for backward compatibility)
+      // but normally the backend will generate it from fullName
+      if (username != null && username.isNotEmpty) {
+        data['username'] = username;
+      }
 
       if (phoneNumber != null && phoneNumber.isNotEmpty) {
         data['phone_number'] = phoneNumber;

@@ -86,6 +86,26 @@ class User {
   bool get isAdmin => role.contains('admin');
   bool get isMember => role == 'member';
 
+  String? get profilePictureUrl {
+    if (profilePicture == null || profilePicture!.isEmpty) {
+      return null;
+    }
+
+    // If it's already a full URL, return as is
+    if (profilePicture!.startsWith('http://') ||
+        profilePicture!.startsWith('https://')) {
+      return profilePicture;
+    }
+
+    // Construct full URL from relative path
+    const host = String.fromEnvironment(
+      'API_HOST',
+      defaultValue: '192.168.100.106',
+    );
+    const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
+    return 'http://$host:$port$profilePicture';
+  }
+
   String get initials {
     final names = fullName.split(' ').where((n) => n.isNotEmpty).toList();
     if (names.length >= 2 && names[0].isNotEmpty && names[1].isNotEmpty) {

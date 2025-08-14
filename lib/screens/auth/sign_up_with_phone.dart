@@ -17,30 +17,25 @@ class SignUpWithPhoneScreen extends StatefulWidget {
 class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _phoneError;
   String? _fullNameError;
-  String? _usernameError;
 
   @override
   void initState() {
     super.initState();
     _phoneController.addListener(_validatePhoneNumber);
     _fullNameController.addListener(_validateFullName);
-    _usernameController.addListener(_validateUsername);
   }
 
   @override
   void dispose() {
     _phoneController.removeListener(_validatePhoneNumber);
     _fullNameController.removeListener(_validateFullName);
-    _usernameController.removeListener(_validateUsername);
     _phoneController.dispose();
     _fullNameController.dispose();
-    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -54,20 +49,6 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
               : _isPhoneNumberValid(phoneNumber)
               ? null
               : 'Phone number must be in format +255XXXXXXXXX or 0XXXXXXXXX';
-    });
-  }
-
-  void _validateUsername() {
-    final username = _usernameController.text.trim();
-    setState(() {
-      if (username.isEmpty) {
-        _usernameError = null;
-      } else if (_isUsernameValid(username)) {
-        _usernameError = null;
-      } else {
-        _usernameError =
-            'Username must be 3-50 characters with letters, numbers, and underscores only';
-      }
     });
   }
 
@@ -90,13 +71,6 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
     if (fullName.length < 2 || fullName.length > 100) return false;
     // Full name can contain only letters, spaces, apostrophes, and periods
     return RegExp(r"^[a-zA-Z. ']+$").hasMatch(fullName);
-  }
-
-  bool _isUsernameValid(String username) {
-    // Username must be 3-50 alphanumeric characters (letters and numbers)
-    // Backend expects alphanumeric, not just letters
-    if (username.length < 3 || username.length > 50) return false;
-    return RegExp(r"^[a-zA-Z0-9_]+$").hasMatch(username);
   }
 
   bool _isPasswordValid(String password) {
@@ -174,30 +148,6 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
       return;
     }
 
-    // Validate username
-    final username = _usernameController.text.trim();
-    if (username.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a username'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-
-    if (!_isUsernameValid(username)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Username must be 3-50 characters with letters, numbers, and underscores only',
-          ),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
-    }
-
     // Validate password
     if (!_isPasswordValid(_passwordController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -219,7 +169,6 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
       // Cache details to complete backend signup after Firebase verification
       authProvider.setPendingPhoneSignup(
         fullName: fullName,
-        username: username,
         password: _passwordController.text,
         phoneNumber: phoneNumber,
       );
@@ -336,35 +285,6 @@ class _SignUpWithPhoneScreenState extends State<SignUpWithPhoneScreen> {
                       controller: _fullNameController,
                       errorText: _fullNameError,
                       onChanged: (_) => _validateFullName(),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Username Field
-                    AppTextField(
-                      hintText: 'Public username',
-                      controller: _usernameController,
-                      errorText: _usernameError,
-                      onChanged: (_) => _validateUsername(),
-                    ),
-
-                    // Username hint
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4.0, top: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '- You can\'t change your username so choose wisely.',
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '- Username must be 3-50 characters with letters, numbers, and underscores (_) only.',
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          ),
-                        ],
-                      ),
                     ),
 
                     const SizedBox(height: 16),

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/providers/auth_provider.dart';
+import 'package:redeo_app/providers/profile_provider.dart';
 import 'package:redeo_app/providers/payment_provider.dart';
 import 'package:redeo_app/providers/notification_provider.dart';
 import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
@@ -28,20 +29,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadDashboardData() async {
-    final paymentProvider = Provider.of<PaymentProvider>(
-      context,
-      listen: false,
-    );
-    final notificationProvider = Provider.of<NotificationProvider>(
-      context,
-      listen: false,
-    );
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
+      final paymentProvider = Provider.of<PaymentProvider>(
+        context,
+        listen: false,
+      );
+      final notificationProvider = Provider.of<NotificationProvider>(
+        context,
+        listen: false,
+      );
 
-    await Future.wait([
-      paymentProvider.loadContributionTypes(),
-      paymentProvider.loadPaymentHistory(),
-      notificationProvider.loadUnreadCount(),
-    ]);
+      // Set up connection between providers for cross-updates
+      profileProvider.setAuthProvider(authProvider);
+
+      await Future.wait([
+        paymentProvider.loadContributionTypes(),
+        paymentProvider.loadPaymentHistory(),
+        notificationProvider.loadUnreadCount(),
+      ]);
+    } catch (e) {
+      // Handle provider access errors gracefully
+      debugPrint('Error loading dashboard data: $e');
+    }
   }
 
   @override
@@ -180,6 +194,14 @@ class HeaderSection extends StatelessWidget {
         final user = authProvider.currentUser;
         final unreadCount = notificationProvider.unreadCount;
 
+        // Use the full URL from the User model
+        String? profilePictureUrl = user?.profilePictureUrl;
+        if (profilePictureUrl != null && profilePictureUrl.isNotEmpty) {
+          final separator = profilePictureUrl.contains('?') ? '&' : '?';
+          profilePictureUrl =
+              '$profilePictureUrl${separator}t=${DateTime.now().millisecondsSinceEpoch}';
+        }
+
         return Container(
           padding: EdgeInsets.fromLTRB(
             20,
@@ -205,11 +227,11 @@ class HeaderSection extends StatelessWidget {
                 radius: 30,
                 backgroundColor: AppColors.surface,
                 backgroundImage:
-                    user?.profilePicture != null
-                        ? NetworkImage(user!.profilePicture!)
+                    profilePictureUrl != null
+                        ? NetworkImage(profilePictureUrl)
                         : null,
                 child:
-                    user?.profilePicture == null
+                    user?.profilePictureUrl == null
                         ? Text(
                           user?.initials ?? 'U',
                           style: const TextStyle(

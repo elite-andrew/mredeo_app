@@ -17,30 +17,25 @@ class SignUpWithEmailScreen extends StatefulWidget {
 class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
   String? _emailError;
   String? _fullNameError;
-  String? _usernameError;
 
   @override
   void initState() {
     super.initState();
     _emailController.addListener(_validateEmail);
     _fullNameController.addListener(_validateFullName);
-    _usernameController.addListener(_validateUsername);
   }
 
   @override
   void dispose() {
     _emailController.removeListener(_validateEmail);
     _fullNameController.removeListener(_validateFullName);
-    _usernameController.removeListener(_validateUsername);
     _emailController.dispose();
     _fullNameController.dispose();
-    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -58,20 +53,6 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
         _emailError = null;
       } else {
         _emailError = 'Please enter a valid email address';
-      }
-    });
-  }
-
-  void _validateUsername() {
-    final username = _usernameController.text.trim();
-    setState(() {
-      if (username.isEmpty) {
-        _usernameError = null;
-      } else if (_isUsernameValid(username)) {
-        _usernameError = null;
-      } else {
-        _usernameError =
-            'Username must be 3-50 characters with letters, numbers, and underscores only';
       }
     });
   }
@@ -95,13 +76,6 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
     if (fullName.length < 2 || fullName.length > 100) return false;
     // Full name can contain only letters, spaces, apostrophes, and periods
     return RegExp(r"^[a-zA-Z. ']+$").hasMatch(fullName);
-  }
-
-  bool _isUsernameValid(String username) {
-    // Username must be 3-50 alphanumeric characters (letters and numbers)
-    // Backend expects alphanumeric, not just letters
-    if (username.length < 3 || username.length > 50) return false;
-    return RegExp(r"^[a-zA-Z0-9_]+$").hasMatch(username);
   }
 
   bool _isPasswordValid(String password) {
@@ -149,30 +123,6 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       return;
     }
 
-    // Validate username
-    final username = _usernameController.text.trim();
-    if (username.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a username'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    if (!_isUsernameValid(username)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Username must be 3-50 characters with letters, numbers, and underscores only',
-          ),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     // Validate password
     if (!_isPasswordValid(_passwordController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -192,7 +142,6 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final result = await authProvider.signup(
         fullName: fullName,
-        username: username,
         phoneNumber: null, // Email signup doesn't require phone
         password: _passwordController.text,
         email: email,
@@ -312,35 +261,6 @@ class _SignUpWithEmailScreenState extends State<SignUpWithEmailScreen> {
                       controller: _fullNameController,
                       errorText: _fullNameError,
                       onChanged: (_) => _validateFullName(),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Username Field
-                    AppTextField(
-                      hintText: 'Public username',
-                      controller: _usernameController,
-                      errorText: _usernameError,
-                      onChanged: (_) => _validateUsername(),
-                    ),
-
-                    // Username hint
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4.0, top: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '- You can\'t change your username so choose wisely.',
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            '- Username must be 3-50 characters with letters, numbers, and underscores (_) only.',
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          ),
-                        ],
-                      ),
                     ),
 
                     const SizedBox(height: 16),

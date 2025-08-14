@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:redeo_app/data/services/auth_service.dart';
 import 'package:redeo_app/data/services/firebase_auth_service.dart';
 import 'package:redeo_app/data/services/local_storage_service.dart';
+import 'package:redeo_app/data/services/profile_service.dart';
 import 'package:redeo_app/data/models/user_model.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   final FirebaseAuthService _firebaseAuth = FirebaseAuthService();
+  final ProfileService _profileService = ProfileService();
 
   bool _isLoggedIn = false;
   bool _isLoading = false;
@@ -28,16 +30,16 @@ class AuthProvider with ChangeNotifier {
   // Cache phone signup details until OTP verification completes
   void setPendingPhoneSignup({
     required String fullName,
-    required String username,
+    String? username, // Optional since backend generates it
     required String password,
     required String phoneNumber,
   }) {
     _pendingPhoneSignup = {
       'fullName': fullName,
-      'username': username,
       'password': password,
       'phoneNumber': phoneNumber,
     };
+    // Note: username is no longer stored since backend generates it
   }
 
   // Start Firebase phone verification for signup
@@ -107,17 +109,29 @@ class AuthProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
+
+    // Clear any previous user data first
+    _currentUser = null;
+    await LocalStorageService.clearSessionData();
+
     final res = await _firebaseAuth.confirmSmsCode(
       verificationId: verificationId,
       smsCode: smsCode,
     );
     if (res['success'] == true) {
-      // Update provider session from Firebase currentUser
+      // First set basic Firebase user data
       final userData = await _firebaseAuth.getCurrentUser();
       if (userData != null && userData['success'] == true) {
         _currentUser = User.fromJson(userData['data']['user']);
       }
       _isLoggedIn = true;
+
+      // Wait a moment for Firebase auth state to settle
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Then load complete profile from database (includes profile picture)
+      await _loadCompleteProfile();
+
       // Update session timestamp on successful login
       await LocalStorageService.updateLastActiveTime();
       _resendToken = null; // clear after success
@@ -162,7 +176,6 @@ class AuthProvider with ChangeNotifier {
     final data = _pendingPhoneSignup!;
     final result = await _authService.signup(
       fullName: data['fullName']!,
-      username: data['username']!,
       phoneNumber: data['phoneNumber']!,
       password: data['password']!,
       email: null,
@@ -190,6 +203,7 @@ class AuthProvider with ChangeNotifier {
         await _firebaseAuth.signOut();
         await LocalStorageService.markFirstLaunchComplete();
         _isLoggedIn = false;
+        _currentUser = null;
         _setLoading(false);
         return;
       }
@@ -201,6 +215,7 @@ class AuthProvider with ChangeNotifier {
         await _firebaseAuth.signOut();
         await LocalStorageService.clearSessionData();
         _isLoggedIn = false;
+        _currentUser = null;
         _setLoading(false);
         return;
       }
@@ -211,16 +226,25 @@ class AuthProvider with ChangeNotifier {
         final userData = await _firebaseAuth.getCurrentUser();
         if (userData != null && userData['success'] == true) {
           _currentUser = User.fromJson(userData['data']['user']);
+
+          // Load complete profile from database (includes profile picture)
+          await _loadCompleteProfile();
+
           // Update session timestamp since user is still valid
           await LocalStorageService.updateLastActiveTime();
         } else {
           // Firebase user exists but data fetch failed
           _isLoggedIn = false;
+          _currentUser = null;
         }
+      } else {
+        // User not logged in - clear any stale data
+        _currentUser = null;
       }
     } catch (e) {
       // If anything goes wrong, default to requiring authentication
       _isLoggedIn = false;
+      _currentUser = null;
       debugPrint('Error during auth initialization: $e');
     }
 
@@ -231,6 +255,10 @@ class AuthProvider with ChangeNotifier {
   Future<Map<String, dynamic>> login(String identifier, String password) async {
     _setLoading(true);
     _clearError();
+
+    // Clear any previous user data first
+    _currentUser = null;
+    await LocalStorageService.clearSessionData();
 
     // Email path via Firebase
     final isEmail = RegExp(
@@ -254,6 +282,13 @@ class AuthProvider with ChangeNotifier {
         }
         _isLoggedIn = true;
         if (user != null) _currentUser = User.fromJson(user);
+
+        // Wait a moment for Firebase auth state to settle
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        // Load complete profile from database (includes profile picture)
+        await _loadCompleteProfile();
+
         // Update session timestamp on successful login
         await LocalStorageService.updateLastActiveTime();
         _setLoading(false);
@@ -283,7 +318,7 @@ class AuthProvider with ChangeNotifier {
   // Signup
   Future<Map<String, dynamic>> signup({
     required String fullName,
-    required String username,
+    String? username, // Now optional since backend generates it
     String? phoneNumber,
     required String password,
     String? email,
@@ -315,7 +350,6 @@ class AuthProvider with ChangeNotifier {
     // Fallback to legacy signup (phone-based flow)
     final result = await _authService.signup(
       fullName: fullName,
-      username: username,
       phoneNumber: phoneNumber,
       password: password,
       email: email,
@@ -421,6 +455,85 @@ class AuthProvider with ChangeNotifier {
   // Get current session timeout setting
   Future<int> getSessionTimeout() async {
     return await LocalStorageService.getSessionTimeout();
+  }
+
+  // Update current user (e.g., after profile picture upload)
+  void updateCurrentUser(User updatedUser) {
+    _currentUser = updatedUser;
+    notifyListeners();
+  }
+
+  // Public method to manually reload profile (useful for testing and recovery)
+  Future<void> reloadProfile() async {
+    await _loadCompleteProfile();
+  }
+
+  // Force clear all auth state (useful when switching users)
+  Future<void> clearAuthState() async {
+    _isLoggedIn = false;
+    _currentUser = null;
+    _errorMessage = null;
+    _phoneNumber = null;
+    _resendToken = null;
+    _pendingPhoneSignup = null;
+
+    await LocalStorageService.clearSessionData();
+    notifyListeners();
+  }
+
+  // Load complete profile from database (not just Firebase data)
+  Future<void> _loadCompleteProfile() async {
+    int retries = 0;
+    const maxRetries = 3;
+    const retryDelay = Duration(seconds: 2);
+
+    while (retries < maxRetries) {
+      try {
+        // Verify Firebase user is still current before making API call
+        final firebaseUser = await _firebaseAuth.getCurrentUser();
+        if (firebaseUser == null || firebaseUser['success'] != true) {
+          // Firebase user no longer valid
+          debugPrint('Firebase user not valid during profile load');
+          break;
+        }
+
+        final result = await _profileService.getProfile();
+
+        if (result['success'] == true && result['data'] != null) {
+          if (result['data']['user'] != null) {
+            final user = User.fromJson(result['data']['user']);
+
+            // Double-check that this profile matches the current Firebase user
+            final currentFirebaseUser = firebaseUser['data']['user'];
+            if (currentFirebaseUser != null &&
+                currentFirebaseUser['email'] != null &&
+                user.email == currentFirebaseUser['email']) {
+              _currentUser = user;
+              notifyListeners();
+              return; // Success, exit retry loop
+            } else {
+              debugPrint(
+                'Profile email mismatch: Firebase=${currentFirebaseUser['email']}, API=${user.email}',
+              );
+              break; // Don't retry if users don't match
+            }
+          }
+        }
+
+        // If we get here, the API call succeeded but returned empty/invalid data
+        break;
+      } catch (e) {
+        debugPrint('Error loading profile (attempt ${retries + 1}): $e');
+        retries++;
+
+        if (retries < maxRetries) {
+          await Future.delayed(retryDelay);
+        }
+      }
+    }
+
+    // If all retries failed, log the issue but don't crash
+    debugPrint('Failed to load complete profile after $maxRetries attempts');
   }
 
   void _setLoading(bool loading) {

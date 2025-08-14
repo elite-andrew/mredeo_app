@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:redeo_app/data/services/profile_service.dart';
 import 'package:redeo_app/data/models/user_model.dart';
 import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:redeo_app/providers/auth_provider.dart';
 
 class ProfileProvider with ChangeNotifier {
   final ProfileService _profileService = ProfileService();
+  AuthProvider? _authProvider;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -15,6 +17,23 @@ class ProfileProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   User? get user => _user;
   UserSettings? get settings => _settings;
+
+  // Set auth provider for cross-provider updates
+  void setAuthProvider(AuthProvider authProvider) {
+    _authProvider = authProvider;
+  }
+
+  // Sync with AuthProvider user data (fallback when API fails)
+  void syncWithAuthProvider() {
+    if (_authProvider?.currentUser != null) {
+      _user = _authProvider!.currentUser;
+      notifyListeners();
+      AppLogger.provider(
+        'Synced user data from AuthProvider',
+        'ProfileProvider',
+      );
+    }
+  }
 
   // Load user profile
   Future<void> loadProfile() async {
@@ -47,10 +66,16 @@ class ProfileProvider with ChangeNotifier {
           'ProfileProvider',
         );
         _setError(result['message'] ?? 'Failed to load profile');
+
+        // Fallback: sync with AuthProvider if available
+        syncWithAuthProvider();
       }
     } catch (e) {
       AppLogger.error('Profile loading failed', 'ProfileProvider', e);
       _setError('Failed to load profile: ${e.toString()}');
+
+      // Fallback: sync with AuthProvider if available
+      syncWithAuthProvider();
     }
 
     _setLoading(false);
@@ -74,8 +99,15 @@ class ProfileProvider with ChangeNotifier {
 
     if (result['success']) {
       _user = User.fromJson(result['data']['user']);
+
+      // Also update AuthProvider's currentUser if available
+      if (_authProvider?.currentUser != null) {
+        _authProvider!.updateCurrentUser(_user!);
+      }
+
       AppLogger.provider('Profile updated successfully', 'ProfileProvider');
       _setLoading(false);
+      notifyListeners(); // Ensure UI updates
       return {'success': true, 'message': result['message']};
     } else {
       AppLogger.warning(
@@ -96,10 +128,28 @@ class ProfileProvider with ChangeNotifier {
     final result = await _profileService.uploadProfilePicture(imagePath);
 
     if (result['success']) {
-      _user = _user?.copyWith(
-        profilePicture: result['data']['profile_picture_url'],
-      );
+      final newProfilePictureUrl =
+          result['data']['data']['profile_picture_url'];
+
+      // Update local user model
+      _user = _user?.copyWith(profilePicture: newProfilePictureUrl);
+
+      // Also update AuthProvider's currentUser if available
+      if (_authProvider?.currentUser != null) {
+        _authProvider!.updateCurrentUser(
+          _authProvider!.currentUser!.copyWith(
+            profilePicture: newProfilePictureUrl,
+          ),
+        );
+      }
+
       _setLoading(false);
+      notifyListeners(); // Ensure UI updates
+
+      AppLogger.provider(
+        'Profile picture uploaded successfully',
+        'ProfileProvider',
+      );
       return {'success': true, 'message': result['message']};
     } else {
       _setError(result['message']);

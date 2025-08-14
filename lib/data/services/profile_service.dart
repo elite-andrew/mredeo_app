@@ -9,7 +9,9 @@ class ProfileService {
   Future<Map<String, dynamic>> getProfile() async {
     try {
       final response = await _apiService.get(ApiEndpoints.profile);
-      return {'success': true, 'data': response.data};
+
+      // Return the response data directly (it already has success/data structure)
+      return response.data as Map<String, dynamic>;
     } catch (e) {
       return _handleError(e);
     }

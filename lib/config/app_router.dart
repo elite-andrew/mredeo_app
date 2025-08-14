@@ -18,6 +18,8 @@ import 'package:redeo_app/screens/member/dashboard_screen.dart';
 import 'package:redeo_app/screens/member/loading_payment_screen.dart';
 import 'package:redeo_app/screens/member/make_payment_screen.dart';
 import 'package:redeo_app/screens/member/member_profile_screen.dart';
+import 'package:redeo_app/screens/member/edit_profile_screen.dart';
+import 'package:redeo_app/screens/member/change_password_screen.dart';
 import 'package:redeo_app/screens/member/notifications_screen.dart';
 import 'package:redeo_app/screens/member/payment_status_screen.dart';
 import 'package:redeo_app/screens/member/settings_screen.dart';
@@ -83,6 +85,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/member_profile',
       builder: (context, state) => const MemberProfileScreen(),
+    ),
+    GoRoute(
+      path: '/edit_profile',
+      builder: (context, state) => const EditProfileScreen(),
+    ),
+    GoRoute(
+      path: '/change_password',
+      builder: (context, state) => const ChangePasswordScreen(),
     ),
     GoRoute(
       path: '/notifications',

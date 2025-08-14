@@ -24,13 +24,25 @@ class PaymentProvider with ChangeNotifier {
 
     final result = await _paymentService.getContributionTypes();
 
-    if (result['success']) {
+    if (result['success'] && result['data'] != null) {
+      final data = result['data'];
+      List<dynamic> contributionList;
+
+      // Handle different response structures
+      if (data is List) {
+        contributionList = data;
+      } else if (data is Map && data['data'] is List) {
+        contributionList = data['data'];
+      } else {
+        contributionList = [];
+      }
+
       _contributionTypes =
-          (result['data']['data'] as List)
+          contributionList
               .map((json) => ContributionType.fromJson(json))
               .toList();
     } else {
-      _setError(result['message']);
+      _setError(result['message'] ?? 'Failed to load contribution types');
     }
 
     _setLoading(false);

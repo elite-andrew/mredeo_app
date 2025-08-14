@@ -36,6 +36,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  AuthProvider? _authProvider;
+
   @override
   void initState() {
     super.initState();
@@ -52,10 +54,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && _authProvider != null) {
       // App came to foreground - update session activity
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      authProvider.updateSessionActivity();
+      _authProvider!.updateSessionActivity();
     }
   }
 
@@ -63,7 +64,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) {
+            _authProvider = AuthProvider();
+            return _authProvider!;
+          },
+        ),
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),

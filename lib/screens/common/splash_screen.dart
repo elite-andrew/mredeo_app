@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
     await authProvider.initializeAuth();
 
     // Wait minimum splash time
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 1));
 
     if (mounted) {
       // Navigate based on auth state

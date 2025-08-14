@@ -20,15 +20,22 @@ class ProfileProvider with ChangeNotifier {
     _setLoading(true);
     _clearError();
 
-    final result = await _profileService.getProfile();
+    try {
+      final result = await _profileService.getProfile();
 
-    if (result['success']) {
-      _user = User.fromJson(result['data']['user']);
-      if (result['data']['settings'] != null) {
-        _settings = UserSettings.fromJson(result['data']['settings']);
+      if (result['success'] == true && result['data'] != null) {
+        if (result['data']['user'] != null) {
+          _user = User.fromJson(result['data']['user']);
+        }
+        if (result['data']['settings'] != null) {
+          _settings = UserSettings.fromJson(result['data']['settings']);
+        }
+      } else {
+        _setError(result['message'] ?? 'Failed to load profile');
       }
-    } else {
-      _setError(result['message']);
+    } catch (e) {
+      print('Profile loading error: $e');
+      _setError('Failed to load profile: ${e.toString()}');
     }
 
     _setLoading(false);

@@ -5,7 +5,7 @@ class AppConfig {
   static String get baseUrl {
     const host = String.fromEnvironment(
       'API_HOST',
-      defaultValue: '192.168.5.45',
+      defaultValue: '192.168.100.106',
     );
     const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
     return 'http://$host:$port/api/v1';

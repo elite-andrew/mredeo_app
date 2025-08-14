@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redeo_app/data/services/auth_service.dart';
 import 'package:redeo_app/data/services/firebase_auth_service.dart';
+import 'package:redeo_app/data/services/local_storage_service.dart';
 import 'package:redeo_app/data/models/user_model.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -117,6 +118,8 @@ class AuthProvider with ChangeNotifier {
         _currentUser = User.fromJson(userData['data']['user']);
       }
       _isLoggedIn = true;
+      // Update session timestamp on successful login
+      await LocalStorageService.updateLastActiveTime();
       _resendToken = null; // clear after success
       _setLoading(false);
       notifyListeners();
@@ -175,16 +178,52 @@ class AuthProvider with ChangeNotifier {
     return {'success': false, 'message': msg};
   }
 
-  // Initialize auth state using Firebase only
+  // Initialize auth state with session management
   Future<void> initializeAuth() async {
     _setLoading(true);
-    _isLoggedIn = await _firebaseAuth.isLoggedIn();
-    if (_isLoggedIn) {
-      final userData = await _firebaseAuth.getCurrentUser();
-      if (userData != null && userData['success'] == true) {
-        _currentUser = User.fromJson(userData['data']['user']);
+
+    try {
+      // Check if this is the first launch
+      final isFirstLaunch = await LocalStorageService.isFirstLaunch();
+      if (isFirstLaunch) {
+        // First launch - always require authentication
+        await _firebaseAuth.signOut();
+        await LocalStorageService.markFirstLaunchComplete();
+        _isLoggedIn = false;
+        _setLoading(false);
+        return;
       }
+
+      // Check if session has expired
+      final isSessionExpired = await LocalStorageService.isSessionExpired();
+      if (isSessionExpired) {
+        // Session expired - sign out and require re-authentication
+        await _firebaseAuth.signOut();
+        await LocalStorageService.clearSessionData();
+        _isLoggedIn = false;
+        _setLoading(false);
+        return;
+      }
+
+      // Check if user is still logged in Firebase
+      _isLoggedIn = await _firebaseAuth.isLoggedIn();
+      if (_isLoggedIn) {
+        final userData = await _firebaseAuth.getCurrentUser();
+        if (userData != null && userData['success'] == true) {
+          _currentUser = User.fromJson(userData['data']['user']);
+          // Update session timestamp since user is still valid
+          await LocalStorageService.updateLastActiveTime();
+        } else {
+          // Firebase user exists but data fetch failed
+          _isLoggedIn = false;
+        }
+      }
+    } catch (e) {
+      // If anything goes wrong, default to requiring authentication
+      _isLoggedIn = false;
+      debugPrint('Error during auth initialization: $e');
     }
+
     _setLoading(false);
   }
 
@@ -215,6 +254,8 @@ class AuthProvider with ChangeNotifier {
         }
         _isLoggedIn = true;
         if (user != null) _currentUser = User.fromJson(user);
+        // Update session timestamp on successful login
+        await LocalStorageService.updateLastActiveTime();
         _setLoading(false);
         notifyListeners();
         return {'success': true, 'requiresOtp': false};
@@ -355,11 +396,31 @@ class AuthProvider with ChangeNotifier {
       await _firebaseAuth.signOut();
     } catch (_) {}
 
+    // Clear session data
+    await LocalStorageService.clearSessionData();
+
     _isLoggedIn = false;
     _currentUser = null;
     _clearError();
     _setLoading(false);
     notifyListeners();
+  }
+
+  // Update session activity (call this when app comes to foreground)
+  Future<void> updateSessionActivity() async {
+    if (_isLoggedIn) {
+      await LocalStorageService.updateLastActiveTime();
+    }
+  }
+
+  // Set custom session timeout (in minutes)
+  Future<void> setSessionTimeout(int minutes) async {
+    await LocalStorageService.setSessionTimeout(minutes);
+  }
+
+  // Get current session timeout setting
+  Future<int> getSessionTimeout() async {
+    return await LocalStorageService.getSessionTimeout();
   }
 
   void _setLoading(bool loading) {

@@ -38,15 +38,18 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Android folder - exclude entire android directory
+/android/
+
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# /android/app/debug
+# /android/app/profile
+# /android/app/release
 
 # Additional build and cache directories
-/android/app/build/
-/android/.gradle/
-/android/gradle/wrapper/gradle-wrapper.jar
+# /android/app/build/
+# /android/.gradle/
+# /android/gradle/wrapper/gradle-wrapper.jar
 /ios/Pods/
 /ios/.symlinks/
 /ios/Flutter/Flutter.framework

@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:flutter/foundation.dart';
 // Uncomment these when you're ready for production integration:
 // import 'package:firebase_crashlytics/firebase_crashlytics.dart';

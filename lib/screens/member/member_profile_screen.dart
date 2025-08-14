@@ -36,7 +36,7 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
       backgroundColor: AppColors.background,
       body: Column(
         children: [
-          const CustomAppBar(title: 'My Profile'),
+          const CustomAppBar(title: 'My Account'),
           Expanded(
             child: Consumer2<AuthProvider, ProfileProvider>(
               builder: (context, authProvider, profileProvider, child) {

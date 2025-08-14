@@ -22,6 +22,8 @@ dependencies:
   package_info_plus: ^8.3.0  # For app version info
   firebase_auth: ^6.0.1
   firebase_core: ^4.0.0
+  firebase_crashlytics: ^5.0.0
+  firebase_analytics: ^12.0.0
 
 dev_dependencies:
   flutter_test:

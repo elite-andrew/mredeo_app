@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:redeo_app/data/services/profile_service.dart';
 import 'package:redeo_app/data/models/user_model.dart';
+import 'package:redeo_app/core/utils/app_logger.dart';
 
 class ProfileProvider with ChangeNotifier {
   final ProfileService _profileService = ProfileService();
@@ -17,24 +18,38 @@ class ProfileProvider with ChangeNotifier {
 
   // Load user profile
   Future<void> loadProfile() async {
+    AppLogger.provider('Loading user profile...', 'ProfileProvider');
     _setLoading(true);
     _clearError();
 
     try {
       final result = await _profileService.getProfile();
+      AppLogger.provider('Profile API response received', 'ProfileProvider');
 
       if (result['success'] == true && result['data'] != null) {
         if (result['data']['user'] != null) {
           _user = User.fromJson(result['data']['user']);
+          AppLogger.provider(
+            'User data loaded successfully',
+            'ProfileProvider',
+          );
         }
         if (result['data']['settings'] != null) {
           _settings = UserSettings.fromJson(result['data']['settings']);
+          AppLogger.provider(
+            'User settings loaded successfully',
+            'ProfileProvider',
+          );
         }
       } else {
+        AppLogger.warning(
+          'Profile loading failed: ${result['message']}',
+          'ProfileProvider',
+        );
         _setError(result['message'] ?? 'Failed to load profile');
       }
     } catch (e) {
-      print('Profile loading error: $e');
+      AppLogger.error('Profile loading failed', 'ProfileProvider', e);
       _setError('Failed to load profile: ${e.toString()}');
     }
 
@@ -47,6 +62,7 @@ class ProfileProvider with ChangeNotifier {
     String? email,
     String? phoneNumber,
   }) async {
+    AppLogger.provider('Updating user profile...', 'ProfileProvider');
     _setLoading(true);
     _clearError();
 
@@ -58,9 +74,14 @@ class ProfileProvider with ChangeNotifier {
 
     if (result['success']) {
       _user = User.fromJson(result['data']['user']);
+      AppLogger.provider('Profile updated successfully', 'ProfileProvider');
       _setLoading(false);
       return {'success': true, 'message': result['message']};
     } else {
+      AppLogger.warning(
+        'Profile update failed: ${result['message']}',
+        'ProfileProvider',
+      );
       _setError(result['message']);
       _setLoading(false);
       return {'success': false, 'message': result['message']};

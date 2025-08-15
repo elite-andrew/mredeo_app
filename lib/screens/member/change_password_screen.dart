@@ -25,6 +25,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _showConfirmPassword = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Add listener to current password to trigger validation on new password field
+    _currentPasswordController.addListener(() {
+      if (_newPasswordController.text.isNotEmpty) {
+        _formKey.currentState?.validate();
+      }
+    });
+    // Add listener to new password to trigger validation on confirm password field
+    _newPasswordController.addListener(() {
+      if (_confirmPasswordController.text.isNotEmpty) {
+        _formKey.currentState?.validate();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
@@ -63,6 +80,50 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         );
       }
     }
+  }
+
+  String? _validateNewPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter a new password';
+    }
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+    if (value == _currentPasswordController.text) {
+      return 'New password must be different from current password';
+    }
+    // Additional password strength checks
+    if (!value.contains(RegExp(r'[A-Za-z]'))) {
+      return 'Password must contain at least one letter';
+    }
+    if (!value.contains(RegExp(r'[0-9]'))) {
+      return 'Password must contain at least one number';
+    }
+    return null;
+  }
+
+  Widget _buildRequirement(String text, bool isValid) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 1),
+      child: Row(
+        children: [
+          Icon(
+            isValid ? Icons.check_circle : Icons.radio_button_unchecked,
+            size: 14,
+            color: isValid ? Colors.green : Colors.grey,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 11,
+              color: isValid ? Colors.green : Colors.grey[600],
+              fontWeight: isValid ? FontWeight.w500 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -145,15 +206,58 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                 _showNewPassword = !_showNewPassword;
                               });
                             },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a new password';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
+                            validator: _validateNewPassword,
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Password requirements helper
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.primary.withValues(alpha: 0.3),
+                                width: 1,
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Password Requirements:',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                _buildRequirement(
+                                  'At least 6 characters',
+                                  _newPasswordController.text.length >= 6,
+                                ),
+                                _buildRequirement(
+                                  'Contains at least one letter',
+                                  _newPasswordController.text.contains(
+                                    RegExp(r'[A-Za-z]'),
+                                  ),
+                                ),
+                                _buildRequirement(
+                                  'Contains at least one number',
+                                  _newPasswordController.text.contains(
+                                    RegExp(r'[0-9]'),
+                                  ),
+                                ),
+                                _buildRequirement(
+                                  'Different from current password',
+                                  _newPasswordController.text !=
+                                          _currentPasswordController.text &&
+                                      _newPasswordController.text.isNotEmpty,
+                                ),
+                              ],
+                            ),
                           ),
 
                           const SizedBox(height: 16),

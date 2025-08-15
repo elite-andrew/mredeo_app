@@ -251,6 +251,53 @@ class FirebaseAuthService {
     }
   }
 
+  // Change password (requires re-authentication)
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) {
+        return {'success': false, 'message': 'No user logged in'};
+      }
+
+      // Check if new password is the same as current password
+      if (currentPassword == newPassword) {
+        return {
+          'success': false,
+          'message':
+              'New password must be different from your current password',
+        };
+      }
+
+      developer.log('Attempting password change for user: ${user.email}');
+
+      // Re-authenticate user with current password for security
+      final credential = fb.EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+      developer.log('Re-authentication successful');
+
+      // Update password
+      await user.updatePassword(newPassword);
+      developer.log('Password updated successfully');
+
+      return {'success': true, 'message': 'Password changed successfully'};
+    } on fb.FirebaseAuthException catch (e) {
+      developer.log(
+        'Firebase Auth error during password change: ${e.code} - ${e.message}',
+      );
+      return _handleFbAuthError(e);
+    } catch (e) {
+      developer.log('Password change error: $e');
+      return {'success': false, 'message': 'An error occurred'};
+    }
+  }
+
   Future<String?> getIdToken({bool forceRefresh = false}) async {
     try {
       final user = _auth.currentUser;
@@ -289,6 +336,10 @@ class FirebaseAuthService {
         break;
       case 'too-many-requests':
         message = 'Too many attempts. Try again later';
+        break;
+      case 'requires-recent-login':
+        message =
+            'Please log out and log in again before changing your password';
         break;
       case 'invalid-verification-code':
         message = 'Invalid OTP code';

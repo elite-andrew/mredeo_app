@@ -51,7 +51,7 @@ class AppBottomNavigation extends StatelessWidget {
             BottomNavigationBarItem(
               icon: Padding(
                 padding: EdgeInsets.symmetric(vertical: 4),
-                child: Icon(Icons.tune),
+                child: Icon(Icons.settings),
               ),
               label: 'Settings',
             ),

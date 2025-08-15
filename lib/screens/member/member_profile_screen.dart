@@ -36,6 +36,14 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
       // Set up connection between providers for cross-updates
       profileProvider.setAuthProvider(authProvider);
 
+      // If AuthProvider has user data but ProfileProvider doesn't, sync first
+      if (authProvider.currentUser != null && profileProvider.user == null) {
+        debugPrint(
+          'AuthProvider has user data, syncing to ProfileProvider first',
+        );
+        profileProvider.syncWithAuthProvider();
+      }
+
       await profileProvider.loadProfile();
     } catch (e) {
       // Handle provider access errors gracefully
@@ -276,6 +284,8 @@ class _MemberProfileScreenState extends State<MemberProfileScreen> {
         return 'Secretary';
       case 'admin_signatory':
         return 'Signatory';
+      case 'admin_treasurer':
+        return 'Treasurer';
       default:
         return 'Member';
     }

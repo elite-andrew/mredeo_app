@@ -67,7 +67,14 @@ class PaymentProvider with ChangeNotifier {
         _paymentHistory.addAll(payments);
       }
     } else {
-      _setError(result['message']);
+      // Don't show error for empty data - just set empty list
+      if (result['message']?.toString().toLowerCase().contains('no') == true ||
+          result['message']?.toString().toLowerCase().contains('empty') ==
+              true) {
+        _paymentHistory = [];
+      } else {
+        _setError(result['message']);
+      }
     }
 
     _setLoading(false);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:redeo_app/config/app_routes.dart';
 import 'package:redeo_app/providers/auth_provider.dart';
 import 'package:redeo_app/providers/profile_provider.dart';
@@ -11,6 +12,8 @@ import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/specific/dashboard_stat_card.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/data/models/payment_model.dart';
+import 'package:redeo_app/core/utils/image_cache_manager.dart';
+import 'package:redeo_app/core/utils/app_logger.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -196,10 +199,25 @@ class HeaderSection extends StatelessWidget {
 
         // Use the full URL from the User model
         String? profilePictureUrl = user?.profilePictureUrl;
+
+        // Debug logging for dashboard
+        AppLogger.info(
+          'Dashboard: Raw profile picture: ${user?.profilePicture}',
+          'DashboardScreen',
+        );
+        AppLogger.info(
+          'Dashboard: Constructed URL: $profilePictureUrl',
+          'DashboardScreen',
+        );
+
         if (profilePictureUrl != null && profilePictureUrl.isNotEmpty) {
           final separator = profilePictureUrl.contains('?') ? '&' : '?';
           profilePictureUrl =
               '$profilePictureUrl${separator}t=${DateTime.now().millisecondsSinceEpoch}';
+          AppLogger.info(
+            'Dashboard: Final URL with cache buster: $profilePictureUrl',
+            'DashboardScreen',
+          );
         }
 
         return Container(
@@ -226,21 +244,63 @@ class HeaderSection extends StatelessWidget {
               CircleAvatar(
                 radius: 30,
                 backgroundColor: AppColors.surface,
-                backgroundImage:
-                    profilePictureUrl != null
-                        ? NetworkImage(profilePictureUrl)
-                        : null,
                 child:
-                    user?.profilePictureUrl == null
-                        ? Text(
+                    profilePictureUrl != null
+                        ? ClipOval(
+                          child: CachedNetworkImage(
+                            imageUrl: profilePictureUrl,
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                            cacheManager: ImageCacheManager.instance,
+                            placeholder:
+                                (context, url) => Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surface.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.primary,
+                                      strokeWidth: 2,
+                                    ),
+                                  ),
+                                ),
+                            errorWidget:
+                                (context, url, error) => Container(
+                                  width: 60,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.surface,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      user?.initials ?? 'U',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            fadeInDuration: const Duration(milliseconds: 300),
+                            fadeOutDuration: const Duration(milliseconds: 100),
+                          ),
+                        )
+                        : Text(
                           user?.initials ?? 'U',
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: AppColors.textPrimary,
                           ),
-                        )
-                        : null,
+                        ),
               ),
               const SizedBox(width: 12),
               Expanded(

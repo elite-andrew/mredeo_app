@@ -175,10 +175,26 @@ class _ClickableProfilePictureState extends State<ClickableProfilePicture> {
   Widget build(BuildContext context) {
     // Use the full URL from the User model
     String? profilePictureUrl = widget.user?.profilePictureUrl;
+
+    // Debug logging
+    AppLogger.info(
+      'ClickableProfilePicture: Raw profile picture: ${widget.user?.profilePicture}',
+      'ClickableProfilePicture',
+    );
+    AppLogger.info(
+      'ClickableProfilePicture: Constructed URL: $profilePictureUrl',
+      'ClickableProfilePicture',
+    );
+
     if (profilePictureUrl != null && profilePictureUrl.isNotEmpty) {
       final separator = profilePictureUrl.contains('?') ? '&' : '?';
       profilePictureUrl =
           '$profilePictureUrl${separator}t=${DateTime.now().millisecondsSinceEpoch}';
+
+      AppLogger.info(
+        'ClickableProfilePicture: Final URL with cache buster: $profilePictureUrl',
+        'ClickableProfilePicture',
+      );
     }
 
     return GestureDetector(
@@ -188,21 +204,75 @@ class _ClickableProfilePictureState extends State<ClickableProfilePicture> {
           CircleAvatar(
             radius: widget.radius,
             backgroundColor: AppColors.primary,
-            backgroundImage:
-                profilePictureUrl != null
-                    ? NetworkImage(profilePictureUrl)
-                    : null,
             child:
-                widget.user?.profilePictureUrl == null
-                    ? Text(
+                profilePictureUrl != null
+                    ? ClipOval(
+                      child: Image.network(
+                        profilePictureUrl,
+                        width: widget.radius * 2,
+                        height: widget.radius * 2,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          AppLogger.warning(
+                            'NetworkImage failed to load: $profilePictureUrl',
+                            'ClickableProfilePicture',
+                          );
+                          AppLogger.warning(
+                            'NetworkImage error: $error',
+                            'ClickableProfilePicture',
+                          );
+                          return Container(
+                            width: widget.radius * 2,
+                            height: widget.radius * 2,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: Text(
+                                widget.user?.initials ?? '?',
+                                style: TextStyle(
+                                  fontSize: widget.radius * 0.48,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Container(
+                            width: widget.radius * 2,
+                            height: widget.radius * 2,
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primary,
+                                strokeWidth: 2,
+                                value:
+                                    loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress
+                                                .cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    )
+                    : Text(
                       widget.user?.initials ?? '?',
                       style: TextStyle(
                         fontSize: widget.radius * 0.48,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
-                    )
-                    : null,
+                    ),
           ),
           if (widget.enableEdit)
             Positioned(

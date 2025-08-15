@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:redeo_app/widgets/common/custom_app_bar.dart';
 import 'package:redeo_app/widgets/common/app_button.dart';
 import 'package:redeo_app/widgets/common/validated_text_field.dart';
@@ -11,6 +12,7 @@ import 'package:redeo_app/providers/profile_provider.dart';
 import 'package:redeo_app/providers/auth_provider.dart';
 import 'package:redeo_app/data/models/user_model.dart';
 import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:redeo_app/core/utils/image_cache_manager.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -54,9 +56,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         _phoneController.text = user.phoneNumber;
       }
 
-      // Listen for changes
-      _fullNameController.addListener(_onFieldChange);
-      _emailController.addListener(_onFieldChange);
+      // Only listen for changes on the phone controller since others are read-only
       _phoneController.addListener(_onFieldChange);
     } catch (e) {
       // Handle provider access errors gracefully
@@ -72,21 +72,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = profileProvider.user;
 
     if (user != null) {
-      final hasTextChanges =
-          _fullNameController.text != user.fullName ||
-          _emailController.text != (user.email ?? '') ||
-          _phoneController.text != user.phoneNumber;
+      // Only check phone number changes since full name and email are read-only
+      final hasTextChanges = _phoneController.text != user.phoneNumber;
 
       AppLogger.debug(
         'Field changed - hasTextChanges: $hasTextChanges, _hasChanges: $_hasChanges',
-        'EditProfileScreen',
-      );
-      AppLogger.debug(
-        'fullName: "${_fullNameController.text}" vs "${user.fullName}"',
-        'EditProfileScreen',
-      );
-      AppLogger.debug(
-        'email: "${_emailController.text}" vs "${user.email ?? ''}"',
         'EditProfileScreen',
       );
       AppLogger.debug(
@@ -108,6 +98,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   void dispose() {
+    _phoneController.removeListener(_onFieldChange);
     _fullNameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -266,21 +257,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         }
       }
 
-      // Update profile information
+      // Update profile information (only phone number is editable)
       final result = await profileProvider.updateProfile(
-        fullName: _fullNameController.text.trim(),
-        email:
-            _emailController.text.trim().isEmpty
-                ? null
-                : _emailController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
       );
 
       if (mounted) {
-        if (result['success']) {
+        if (result['success'] == true) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message']),
+              content: Text(
+                result['message'] ?? 'Profile updated successfully',
+              ),
               backgroundColor: AppColors.success,
             ),
           );
@@ -288,7 +276,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message']),
+              content: Text(result['message'] ?? 'Failed to update profile'),
               backgroundColor: AppColors.error,
             ),
           );
@@ -339,24 +327,81 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: CircleAvatar(
                 radius: 57,
                 backgroundColor: AppColors.primary,
-                backgroundImage:
-                    _selectedImage != null
-                        ? FileImage(_selectedImage!)
-                        : (profilePictureUrl != null
-                                ? NetworkImage(profilePictureUrl)
-                                : null)
-                            as ImageProvider?,
                 child:
-                    _selectedImage == null && user?.profilePictureUrl == null
-                        ? Text(
-                          user?.initials ?? '?',
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    _selectedImage != null
+                        ? ClipOval(
+                          child: Image.file(
+                            _selectedImage!,
+                            width: 114,
+                            height: 114,
+                            fit: BoxFit.cover,
                           ),
                         )
-                        : null,
+                        : (profilePictureUrl != null
+                            ? ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: profilePictureUrl,
+                                width: 114,
+                                height: 114,
+                                fit: BoxFit.cover,
+                                cacheManager: ImageCacheManager.instance,
+                                placeholder:
+                                    (context, url) => Container(
+                                      width: 114,
+                                      height: 114,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: CircularProgressIndicator(
+                                          color: AppColors.primary,
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ),
+                                errorWidget: (context, url, error) {
+                                  AppLogger.warning(
+                                    'Failed to load profile picture in edit screen: $url, Error: $error',
+                                    'EditProfileScreen',
+                                  );
+                                  return Container(
+                                    width: 114,
+                                    height: 114,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primary,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        user?.initials ?? '?',
+                                        style: const TextStyle(
+                                          fontSize: 28,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                fadeInDuration: const Duration(
+                                  milliseconds: 300,
+                                ),
+                                fadeOutDuration: const Duration(
+                                  milliseconds: 100,
+                                ),
+                              ),
+                            )
+                            : Text(
+                              user?.initials ?? '?',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            )),
               ),
             ),
           ),
@@ -473,11 +518,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Personal Information',
+                                'Editable Information',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.textPrimary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'You can edit your phone number and profile picture',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -485,12 +538,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ValidatedTextField(
                                 controller: _fullNameController,
                                 label: 'Full Name',
-                                hintText: 'Enter your full name',
+                                hintText: 'Your full name',
                                 prefixIcon: Icons.person,
+                                readOnly: true,
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter your full name';
-                                  }
+                                  // Read-only field doesn't need validation
                                   return null;
                                 },
                               ),
@@ -520,19 +572,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                               ValidatedTextField(
                                 controller: _emailController,
-                                label: 'Email (Optional)',
-                                hintText: 'Enter your email address',
+                                label: 'Email',
+                                hintText: 'Your email address',
                                 prefixIcon: Icons.email,
                                 keyboardType: TextInputType.emailAddress,
+                                readOnly: true,
                                 validator: (value) {
-                                  if (value != null &&
-                                      value.trim().isNotEmpty) {
-                                    if (!RegExp(
-                                      r'^[^@]+@[^@]+\.[^@]+',
-                                    ).hasMatch(value.trim())) {
-                                      return 'Please enter a valid email address';
-                                    }
-                                  }
+                                  // Read-only field doesn't need validation
                                   return null;
                                 },
                               ),

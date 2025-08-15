@@ -36,7 +36,15 @@ class NotificationProvider with ChangeNotifier {
 
       _updateUnreadCount();
     } else {
-      _setError(result['message']);
+      // Don't show error for empty data - just set empty list
+      if (result['message']?.toString().toLowerCase().contains('no') == true ||
+          result['message']?.toString().toLowerCase().contains('empty') ==
+              true) {
+        _notifications = [];
+        _unreadCount = 0;
+      } else {
+        _setError(result['message']);
+      }
     }
 
     _setLoading(false);

@@ -97,13 +97,25 @@ class User {
       return profilePicture;
     }
 
-    // Construct full URL from relative path
-    const host = String.fromEnvironment(
-      'API_HOST',
-      defaultValue: '192.168.100.106',
-    );
-    const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
-    return 'http://$host:$port$profilePicture';
+    // Construct full URL from relative path using AppConfig for consistency
+    try {
+      const host = String.fromEnvironment(
+        'API_HOST',
+        defaultValue: '192.168.100.106',
+      );
+      const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
+      final baseUrl = 'http://$host:$port';
+
+      // Ensure the profile picture path starts with /
+      final path =
+          profilePicture!.startsWith('/')
+              ? profilePicture!
+              : '/$profilePicture!';
+      return '$baseUrl$path';
+    } catch (e) {
+      // If URL construction fails, return null to fallback to initials
+      return null;
+    }
   }
 
   String get initials {

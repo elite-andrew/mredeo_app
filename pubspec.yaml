@@ -20,6 +20,8 @@ dependencies:
   image_picker: ^1.0.4  # For profile picture uploads
   url_launcher: ^6.2.1  # For support links
   package_info_plus: ^8.3.0  # For app version info
+  cached_network_image: ^3.3.1  # For efficient image caching
+  flutter_cache_manager: ^3.4.1  # Cache manager for custom configurations
   firebase_auth: ^6.0.1
   firebase_core: ^4.0.0
   firebase_crashlytics: ^5.0.0

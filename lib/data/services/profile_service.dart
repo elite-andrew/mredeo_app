@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:redeo_app/config/app_config.dart';
+import 'package:redeo_app/core/utils/app_logger.dart';
 import 'api_service.dart';
 
 class ProfileService {
@@ -29,17 +30,52 @@ class ProfileService {
       if (email != null) data['email'] = email;
       if (phoneNumber != null) data['phone_number'] = phoneNumber;
 
+      // Check if we have any data to send
+      if (data.isEmpty) {
+        return {'success': false, 'message': 'No data to update'};
+      }
+
+      AppLogger.info(
+        'Sending update request with data: $data',
+        'ProfileService',
+      );
+
       final response = await _apiService.put(
         ApiEndpoints.updateProfile,
         data: data,
       );
 
-      return {
+      AppLogger.info('Response received: ${response.data}', 'ProfileService');
+
+      // Ensure response.data is not null and has the expected structure
+      final responseData = response.data;
+      if (responseData == null) {
+        AppLogger.error('Response data is null', 'ProfileService');
+        return {'success': false, 'message': 'Invalid response from server'};
+      }
+
+      // Check if response is a Map
+      if (responseData is! Map<String, dynamic>) {
+        AppLogger.error(
+          'Response is not a Map: ${responseData.runtimeType}',
+          'ProfileService',
+        );
+        return {
+          'success': false,
+          'message': 'Invalid response format from server',
+        };
+      }
+
+      final result = {
         'success': true,
-        'data': response.data,
-        'message': 'Profile updated successfully',
+        'data': responseData,
+        'message': responseData['message'] ?? 'Profile updated successfully',
       };
+
+      AppLogger.info('Returning result: $result', 'ProfileService');
+      return result;
     } catch (e) {
+      AppLogger.error('Exception caught', 'ProfileService', e);
       return _handleError(e);
     }
   }

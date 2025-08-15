@@ -11,6 +11,8 @@ class ValidatedTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final ValueChanged<String>? onChanged;
   final String? Function(String?)? validator;
+  final bool enabled;
+  final bool readOnly;
 
   const ValidatedTextField({
     super.key,
@@ -23,6 +25,8 @@ class ValidatedTextField extends StatelessWidget {
     this.keyboardType,
     this.onChanged,
     this.validator,
+    this.enabled = true,
+    this.readOnly = false,
   });
 
   @override
@@ -43,15 +47,31 @@ class ValidatedTextField extends StatelessWidget {
         ],
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surfaceInput,
+            color:
+                enabled && !readOnly
+                    ? AppColors.surfaceInput
+                    : AppColors.surface,
             borderRadius: BorderRadius.circular(13),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(
+              color:
+                  enabled && !readOnly
+                      ? AppColors.border
+                      : AppColors.border.withValues(alpha: 0.5),
+            ),
           ),
           child: TextFormField(
             controller: controller,
             obscureText: obscureText,
             keyboardType: keyboardType,
-            style: TextStyle(color: AppColors.textPrimary, fontSize: 14),
+            enabled: enabled,
+            readOnly: readOnly,
+            style: TextStyle(
+              color:
+                  enabled && !readOnly
+                      ? AppColors.textPrimary
+                      : AppColors.textSecondary,
+              fontSize: 14,
+            ),
             onChanged: onChanged,
             validator: validator,
             decoration: InputDecoration(
@@ -67,7 +87,14 @@ class ValidatedTextField extends StatelessWidget {
               ),
               prefixIcon:
                   prefixIcon != null
-                      ? Icon(prefixIcon, color: AppColors.primary, size: 20)
+                      ? Icon(
+                        prefixIcon,
+                        color:
+                            enabled && !readOnly
+                                ? AppColors.primary
+                                : AppColors.textSecondary,
+                        size: 20,
+                      )
                       : null,
               suffixIcon:
                   onToggleVisibility != null

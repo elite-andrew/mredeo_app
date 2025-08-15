@@ -421,6 +421,28 @@ class AuthProvider with ChangeNotifier {
     return {'success': false, 'message': msg};
   }
 
+  // Change password (Firebase)
+  Future<Map<String, dynamic>> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    _setLoading(true);
+    _clearError();
+
+    final res = await _firebaseAuth.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+
+    _setLoading(false);
+    if (res['success'] == true) {
+      return res;
+    }
+    final msg = res['message'] ?? 'Failed to change password';
+    _setError(msg);
+    return {'success': false, 'message': msg};
+  }
+
   // Logout
   Future<void> logout() async {
     _setLoading(true);
@@ -503,12 +525,25 @@ class AuthProvider with ChangeNotifier {
           if (result['data']['user'] != null) {
             final user = User.fromJson(result['data']['user']);
 
+            debugPrint(
+              'AuthProvider: Raw profile data from API: ${result['data']['user']}',
+            );
+            debugPrint(
+              'AuthProvider: Parsed user profile picture: ${user.profilePicture}',
+            );
+            debugPrint(
+              'AuthProvider: Generated profile picture URL: ${user.profilePictureUrl}',
+            );
+
             // Double-check that this profile matches the current Firebase user
             final currentFirebaseUser = firebaseUser['data']['user'];
             if (currentFirebaseUser != null &&
                 currentFirebaseUser['email'] != null &&
                 user.email == currentFirebaseUser['email']) {
               _currentUser = user;
+              debugPrint(
+                'AuthProvider: Profile loaded successfully - Profile picture: ${user.profilePicture}',
+              );
               notifyListeners();
               return; // Success, exit retry loop
             } else {

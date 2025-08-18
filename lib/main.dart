@@ -8,6 +8,10 @@ import 'package:redeo_app/providers/auth_provider.dart';
 import 'package:redeo_app/providers/payment_provider.dart';
 import 'package:redeo_app/providers/notification_provider.dart';
 import 'package:redeo_app/providers/profile_provider.dart';
+import 'package:redeo_app/providers/admin_provider.dart';
+import 'package:redeo_app/data/repositories/admin_repository.dart';
+import 'package:redeo_app/data/services/api_client.dart';
+import 'package:redeo_app/config/app_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -73,6 +77,13 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (_) => PaymentProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(
+          create: (_) {
+            final apiClient = ApiClient(baseUrl: AppConfig.baseUrl);
+            final adminRepository = AdminRepository(apiClient: apiClient);
+            return AdminProvider(repository: adminRepository);
+          },
+        ),
       ],
       child: MaterialApp.router(
         routerConfig: appRouter,

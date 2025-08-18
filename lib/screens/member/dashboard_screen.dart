@@ -50,7 +50,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       // Set up connection between providers for cross-updates
       profileProvider.setAuthProvider(authProvider);
 
+      // If AuthProvider has user data but ProfileProvider doesn't, sync first
+      if (authProvider.currentUser != null && profileProvider.user == null) {
+        debugPrint(
+          'AuthProvider has user data, syncing to ProfileProvider first',
+        );
+        profileProvider.syncWithAuthProvider();
+      }
+
       await Future.wait([
+        profileProvider.loadProfile(),
         paymentProvider.loadContributionTypes(),
         paymentProvider.loadPaymentHistory(),
         notificationProvider.loadUnreadCount(),
@@ -192,9 +201,16 @@ class HeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<AuthProvider, NotificationProvider>(
-      builder: (context, authProvider, notificationProvider, child) {
-        final user = authProvider.currentUser;
+    return Consumer3<AuthProvider, NotificationProvider, ProfileProvider>(
+      builder: (
+        context,
+        authProvider,
+        notificationProvider,
+        profileProvider,
+        child,
+      ) {
+        // Try to get user from ProfileProvider first (most up-to-date), then AuthProvider
+        final user = profileProvider.user ?? authProvider.currentUser;
         final unreadCount = notificationProvider.unreadCount;
 
         // Use the full URL from the User model

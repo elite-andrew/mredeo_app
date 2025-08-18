@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:redeo_app/core/theme/app_colors.dart';
 import 'package:redeo_app/providers/profile_provider.dart';
 import 'package:redeo_app/data/models/user_model.dart';
 import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:redeo_app/core/utils/image_cache_manager.dart';
 
 class ClickableProfilePicture extends StatefulWidget {
   final User? user;
@@ -207,18 +209,34 @@ class _ClickableProfilePictureState extends State<ClickableProfilePicture> {
             child:
                 profilePictureUrl != null
                     ? ClipOval(
-                      child: Image.network(
-                        profilePictureUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: profilePictureUrl,
                         width: widget.radius * 2,
                         height: widget.radius * 2,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
+                        cacheManager: ImageCacheManager.instance,
+                        placeholder:
+                            (context, url) => Container(
+                              width: widget.radius * 2,
+                              height: widget.radius * 2,
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.3),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            ),
+                        errorWidget: (context, url, error) {
                           AppLogger.warning(
-                            'NetworkImage failed to load: $profilePictureUrl',
+                            'CachedNetworkImage failed to load: $profilePictureUrl',
                             'ClickableProfilePicture',
                           );
                           AppLogger.warning(
-                            'NetworkImage error: $error',
+                            'CachedNetworkImage error: $error',
                             'ClickableProfilePicture',
                           );
                           return Container(
@@ -236,29 +254,6 @@ class _ClickableProfilePictureState extends State<ClickableProfilePicture> {
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
-                              ),
-                            ),
-                          );
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            width: widget.radius * 2,
-                            height: widget.radius * 2,
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.3),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Center(
-                              child: CircularProgressIndicator(
-                                color: AppColors.primary,
-                                strokeWidth: 2,
-                                value:
-                                    loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
                               ),
                             ),
                           );

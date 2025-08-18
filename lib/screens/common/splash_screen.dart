@@ -30,9 +30,10 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(seconds: 1));
 
     if (mounted) {
-      // Navigate based on auth state
+      // Navigate based on auth state and user role
       if (authProvider.isLoggedIn) {
-        context.go(AppRoutes.dashboard);
+        final dashboardRoute = authProvider.dashboardRoute;
+        context.go(dashboardRoute);
       } else {
         context.go(AppRoutes.login);
       }

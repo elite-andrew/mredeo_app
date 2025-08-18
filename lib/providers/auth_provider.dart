@@ -27,6 +27,20 @@ class AuthProvider with ChangeNotifier {
   Map<String, String>? get pendingPhoneSignup => _pendingPhoneSignup;
   int? get resendToken => _resendToken;
 
+  // Role-based getters
+  bool get isAdmin => _currentUser?.isAdmin ?? false;
+  bool get isMember => _currentUser?.isMember ?? false;
+  String get userRole => _currentUser?.role ?? 'member';
+
+  // Get the appropriate dashboard route based on user role
+  String get dashboardRoute {
+    if (isAdmin) {
+      return '/admin_dashboard';
+    } else {
+      return '/dashboard';
+    }
+  }
+
   // Cache phone signup details until OTP verification completes
   void setPendingPhoneSignup({
     required String fullName,

@@ -1,3 +1,5 @@
+import 'package:redeo_app/config/app_config.dart';
+
 class User {
   final String id;
   final String fullName;
@@ -99,12 +101,13 @@ class User {
 
     // Construct full URL from relative path using AppConfig for consistency
     try {
-      const host = String.fromEnvironment(
-        'API_HOST',
-        defaultValue: '192.168.100.106',
-      );
-      const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
-      final baseUrl = 'http://$host:$port';
+      // Use AppConfig to get the correct base URL for the current environment
+      String baseUrl = AppConfig.baseUrl;
+
+      // Remove '/api/v1' from baseUrl to get the base server URL
+      if (baseUrl.endsWith('/api/v1')) {
+        baseUrl = baseUrl.substring(0, baseUrl.length - 7);
+      }
 
       // Ensure the profile picture path starts with /
       final path =

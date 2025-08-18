@@ -3,12 +3,32 @@ class AppConfig {
   // Configure with --dart-define=API_HOST=... and --dart-define=API_PORT=...
   // Defaults assume your backend is on your LAN at 192.168.5.45:3000
   static String get baseUrl {
-    const host = String.fromEnvironment(
-      'API_HOST',
-      defaultValue: '192.168.100.106',
+    // Check for environment-specific configuration
+    const environment = String.fromEnvironment(
+      'ENVIRONMENT',
+      defaultValue: 'local',
     );
-    const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
-    return 'http://$host:$port/api/v1';
+
+    switch (environment) {
+      case 'production':
+        return 'https://your-production-api.com/api/v1';
+      case 'staging':
+        return 'https://your-staging-api.com/api/v1';
+      case 'tunnel':
+        const tunnelHost = String.fromEnvironment(
+          'TUNNEL_HOST',
+          defaultValue: 'localhost',
+        );
+        return 'https://$tunnelHost/api/v1';
+      case 'local':
+      default:
+        const host = String.fromEnvironment(
+          'API_HOST',
+          defaultValue: '192.168.100.106',
+        );
+        const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
+        return 'http://$host:$port/api/v1';
+    }
   }
 
   static const String apiVersion = 'v1';

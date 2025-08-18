@@ -26,6 +26,7 @@ import 'package:redeo_app/screens/member/settings_screen.dart';
 import 'package:redeo_app/screens/member/terms_and_conditions_screen.dart';
 import 'package:redeo_app/screens/member/transactions_history_screen.dart';
 import 'package:redeo_app/screens/member/customer_support_screen.dart';
+import 'package:redeo_app/core/guards/auth_guard.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/splash',
@@ -69,10 +70,14 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-    //Member Screens Routes
+    //Member Screens Routes (Protected)
     GoRoute(
       path: '/dashboard',
-      builder: (context, state) => const DashboardScreen(),
+      builder:
+          (context, state) => AuthGuard.buildGuardedWidget(
+            child: const DashboardScreen(),
+            context: context,
+          ),
     ),
     GoRoute(
       path: '/loading_payment',
@@ -119,26 +124,46 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const CustomerSupportScreen(),
     ),
 
-    //Administrator Screens Routes
+    //Administrator Screens Routes (Protected)
     GoRoute(
       path: '/admin_dashboard',
-      builder: (context, state) => const AdminDashboardScreen(),
+      builder:
+          (context, state) => AuthGuard.buildAdminGuard(
+            child: const AdminDashboardScreen(),
+            context: context,
+          ),
     ),
     GoRoute(
       path: '/admin_profile',
-      builder: (context, state) => const AdminProfileScreen(),
+      builder:
+          (context, state) => AuthGuard.buildAdminGuard(
+            child: const AdminProfileScreen(),
+            context: context,
+          ),
     ),
     GoRoute(
       path: '/issue_notification',
-      builder: (context, state) => const IssueNotificationScreen(),
+      builder:
+          (context, state) => AuthGuard.buildAdminGuard(
+            child: const IssueNotificationScreen(),
+            context: context,
+          ),
     ),
     GoRoute(
       path: '/issue_payment',
-      builder: (context, state) => const IssuePaymentScreen(),
+      builder:
+          (context, state) => AuthGuard.buildAdminGuard(
+            child: const IssuePaymentScreen(),
+            context: context,
+          ),
     ),
     GoRoute(
       path: '/payment_report',
-      builder: (context, state) => const PaymentReportScreen(),
+      builder:
+          (context, state) => AuthGuard.buildAdminGuard(
+            child: const PaymentReportScreen(),
+            context: context,
+          ),
     ),
   ],
 );

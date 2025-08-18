@@ -105,12 +105,16 @@ class _LoginScreenState extends State<LoginScreen> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     try {
+      debugPrint('Starting login process for: $identifier');
       final result = await authProvider.login(identifier, password);
+      debugPrint('Login result: ${result.toString()}');
 
       if (!mounted) return;
 
       if (result['success']) {
+        debugPrint('Login successful: ${result.toString()}');
         if (result['requiresOtp']) {
+          debugPrint('Requires OTP verification');
           final phone = authProvider.phoneNumber ?? identifier;
           // Start Firebase phone verification for login
           final startRes = await authProvider.startPhoneLoginVerification(
@@ -138,8 +142,14 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
         } else {
-          // Navigate to dashboard
-          context.go(AppRoutes.dashboard);
+          // Navigate to appropriate dashboard based on user role
+          debugPrint(
+            'Navigating to dashboard. User role: ${authProvider.userRole}',
+          );
+          debugPrint('Dashboard route: ${authProvider.dashboardRoute}');
+          final dashboardRoute = authProvider.dashboardRoute;
+          context.go(dashboardRoute);
+          debugPrint('Navigation completed to: $dashboardRoute');
         }
       } else if (result['requiresVerification'] == true) {
         // Account needs phone verification - show specific message
@@ -167,10 +177,11 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
+      debugPrint('Login error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('An error occurred. Please try again.'),
+          SnackBar(
+            content: Text('An error occurred. Please try again. Error: $e'),
             backgroundColor: AppColors.error,
           ),
         );

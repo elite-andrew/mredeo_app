@@ -32,6 +32,40 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Flutter build artifacts and generated files
+**/.symlinks/
+**/Flutter/ephemeral/
+**/Pods/
+**/.pub/
+**/.dart_tool/
+**/generated_plugin_registrant.dart
+**/GeneratedPluginRegistrant.*
+
+# Flutter Windows/Linux/macOS
+**/windows/flutter/generated_plugin_registrant.cc
+**/windows/flutter/generated_plugin_registrant.h
+**/linux/flutter/generated_plugin_registrant.cc
+**/linux/flutter/generated_plugin_registrant.h
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Flutter Web
+lib/generated_plugin_registrant.dart
+
+# Flutter plugin loader files
+**/app_plugin_loader.groovy
+**/native_plugin_loader.groovy
+**/flutter.groovy
+**/CMakeLists.txt
+**/BaseApplicationNameHandler.kt
+
+# Flutter Android build files
+**/android/.gradle/
+**/android/app/build/
+**/android/build/
+**/android/gradle/
+**/android/local.properties
+**/android/key.properties
+
 # Symbolication related
 app.*.symbols
 
@@ -70,5 +104,22 @@ Desktop.ini
 *.bak
 *.swp
 *~
+
+# Environment and configuration files
+.env
+.env.local
+.env.*.local
+*.config
+firebase_options.dart
+
+# IDE and editor files
+.vscode/settings.json
+.vscode/launch.json
+*.code-workspace
+
+# Package manager files
+package-lock.json
+yarn.lock
+pubspec.lock
 
 .fake

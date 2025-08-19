@@ -3,6 +3,7 @@ import 'package:mredeo_app/data/services/api_client.dart';
 import 'package:mredeo_app/data/models/admin_metrics.dart';
 import 'package:mredeo_app/data/models/time_bucket_point.dart';
 import 'package:mredeo_app/data/models/pending_notification.dart';
+import 'package:mredeo_app/data/models/payment_model.dart';
 
 class AdminRepository {
   final ApiClient apiClient;
@@ -52,6 +53,39 @@ class AdminRepository {
       throw _handleRepositoryError(e, 'Failed to fetch pending notifications');
     } catch (e) {
       throw Exception('Unexpected error fetching notifications: $e');
+    }
+  }
+
+  Future<List<IssuedPayment>> fetchIssuedPayments({
+    DateTime? startDate,
+    DateTime? endDate,
+    String? type,
+  }) async {
+    try {
+      String endpoint = '/api/admin/payments/issued';
+      List<String> queryParams = [];
+
+      if (startDate != null) {
+        queryParams.add('start_date=${startDate.toIso8601String()}');
+      }
+      if (endDate != null) {
+        queryParams.add('end_date=${endDate.toIso8601String()}');
+      }
+      if (type != null && type != 'All') {
+        queryParams.add('type=$type');
+      }
+
+      if (queryParams.isNotEmpty) {
+        endpoint += '?${queryParams.join('&')}';
+      }
+
+      final json = await apiClient.get(endpoint);
+      final List items = json['payments'] ?? [];
+      return items.map((p) => IssuedPayment.fromJson(p)).toList();
+    } on DioException catch (e) {
+      throw _handleRepositoryError(e, 'Failed to fetch issued payments');
+    } catch (e) {
+      throw Exception('Unexpected error fetching issued payments: $e');
     }
   }
 

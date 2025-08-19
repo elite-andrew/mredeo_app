@@ -5,6 +5,7 @@ import 'package:mredeo_app/screens/admin/admin_profile_screen.dart';
 import 'package:mredeo_app/screens/admin/issue_notification_screen.dart';
 import 'package:mredeo_app/screens/admin/issue_payment_screen.dart';
 import 'package:mredeo_app/screens/admin/payment_report_screen.dart';
+import 'package:mredeo_app/screens/admin/issued_payment_history_screen.dart';
 import 'package:mredeo_app/screens/auth/forgot_password_screen.dart';
 
 import 'package:mredeo_app/screens/auth/login_screen.dart';
@@ -162,6 +163,14 @@ final GoRouter appRouter = GoRouter(
       builder:
           (context, state) => AuthGuard.buildAdminGuard(
             child: const PaymentReportScreen(),
+            context: context,
+          ),
+    ),
+    GoRoute(
+      path: '/issued_payment_history',
+      builder:
+          (context, state) => AuthGuard.buildAdminGuard(
+            child: const IssuedPaymentHistoryScreen(),
             context: context,
           ),
     ),

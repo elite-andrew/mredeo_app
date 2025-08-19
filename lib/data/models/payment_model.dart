@@ -169,8 +169,12 @@ class IssuedPayment {
   final String id;
   final String issuedBy;
   final String issuedTo;
+  final String memberName;
+  final String memberPhone;
   final double amount;
   final String purpose;
+  final String type;
+  final String description;
   final String transactionReference;
   final DateTime issuedAt;
   final DateTime createdAt;
@@ -179,8 +183,12 @@ class IssuedPayment {
     required this.id,
     required this.issuedBy,
     required this.issuedTo,
+    required this.memberName,
+    required this.memberPhone,
     required this.amount,
     required this.purpose,
+    required this.type,
+    required this.description,
     required this.transactionReference,
     required this.issuedAt,
     required this.createdAt,
@@ -191,8 +199,12 @@ class IssuedPayment {
       id: json['id'] ?? '',
       issuedBy: json['issued_by'] ?? '',
       issuedTo: json['issued_to'] ?? '',
+      memberName: json['member_name'] ?? json['issued_to_name'] ?? 'Unknown',
+      memberPhone: json['member_phone'] ?? json['issued_to_phone'] ?? '',
       amount: (json['amount'] ?? 0.0).toDouble(),
       purpose: json['purpose'] ?? '',
+      type: json['type'] ?? json['contribution_type'] ?? 'Other',
+      description: json['description'] ?? json['purpose'] ?? '',
       transactionReference: json['transaction_reference'] ?? '',
       issuedAt: DateTime.parse(
         json['issued_at'] ?? DateTime.now().toIso8601String(),
@@ -208,8 +220,12 @@ class IssuedPayment {
       'id': id,
       'issued_by': issuedBy,
       'issued_to': issuedTo,
+      'member_name': memberName,
+      'member_phone': memberPhone,
       'amount': amount,
       'purpose': purpose,
+      'type': type,
+      'description': description,
       'transaction_reference': transactionReference,
       'issued_at': issuedAt.toIso8601String(),
       'created_at': createdAt.toIso8601String(),

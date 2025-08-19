@@ -85,7 +85,7 @@ class AdminDrawer extends StatelessWidget {
                     color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
-                      Navigator.pushNamed(context, "/admin/payment-history");
+                      context.go("/issued_payment_history");
                     },
                   ),
                   const SizedBox(height: 8),
@@ -164,10 +164,7 @@ class AdminDrawer extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary,
-                AppColors.primary.withValues(blue: AppColors.primary.b + 30),
-              ],
+              colors: [AppColors.primary, AppColors.primary.withAlpha(200)],
             ),
             boxShadow: [
               BoxShadow(

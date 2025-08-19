@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/data/services/profile_service.dart';
-import 'package:redeo_app/data/models/user_model.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
-import 'package:redeo_app/core/utils/image_cache_manager.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/data/services/profile_service.dart';
+import 'package:mredeo_app/data/models/user_model.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/core/utils/image_cache_manager.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
 
 class ProfileProvider with ChangeNotifier {
   final ProfileService _profileService = ProfileService();

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
 
 class CustomerSupportScreen extends StatelessWidget {
   const CustomerSupportScreen({super.key});

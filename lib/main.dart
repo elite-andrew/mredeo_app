@@ -3,15 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'package:redeo_app/config/app_router.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/providers/payment_provider.dart';
-import 'package:redeo_app/providers/notification_provider.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
-import 'package:redeo_app/providers/admin_provider.dart';
-import 'package:redeo_app/data/repositories/admin_repository.dart';
-import 'package:redeo_app/data/services/api_client.dart';
-import 'package:redeo_app/config/app_config.dart';
+import 'package:mredeo_app/config/app_router.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/providers/payment_provider.dart';
+import 'package:mredeo_app/providers/notification_provider.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/providers/admin_provider.dart';
+import 'package:mredeo_app/data/repositories/admin_repository.dart';
+import 'package:mredeo_app/data/services/api_client.dart';
+import 'package:mredeo_app/config/app_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

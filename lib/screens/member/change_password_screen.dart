@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
-import 'package:redeo_app/widgets/common/validated_text_field.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/widgets/common/app_button.dart';
+import 'package:mredeo_app/widgets/common/validated_text_field.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});

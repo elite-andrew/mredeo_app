@@ -1,5 +1,5 @@
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
 
 class ImageCacheManager {
   static const String key = 'profileImageCache';

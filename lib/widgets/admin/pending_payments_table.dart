@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/data/models/pending_notification.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/data/models/pending_notification.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
 
 class PendingPaymentsTable extends StatelessWidget {
   final List<PendingNotification> payments;

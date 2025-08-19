@@ -24,7 +24,7 @@ class AppConfig {
       default:
         const host = String.fromEnvironment(
           'API_HOST',
-          defaultValue: '192.168.100.106',
+          defaultValue: '10.0.0.194',
         );
         const port = String.fromEnvironment('API_PORT', defaultValue: '3000');
         return 'http://$host:$port/api/v1';

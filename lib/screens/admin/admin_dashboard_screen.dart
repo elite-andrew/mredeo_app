@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:redeo_app/providers/admin_provider.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
-import 'package:redeo_app/widgets/admin/dashboard_chart.dart';
-import 'package:redeo_app/widgets/admin/pending_payments_table.dart';
-import 'package:redeo_app/widgets/admin/admin_drawer.dart';
-import 'package:redeo_app/widgets/admin/dashboard_metrics_grid.dart';
-import 'package:redeo_app/widgets/admin/chart_controls.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/core/utils/image_cache_manager.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/providers/admin_provider.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/widgets/admin/dashboard_chart.dart';
+import 'package:mredeo_app/widgets/admin/pending_payments_table.dart';
+import 'package:mredeo_app/widgets/admin/admin_drawer.dart';
+import 'package:mredeo_app/widgets/admin/dashboard_metrics_grid.dart';
+import 'package:mredeo_app/widgets/admin/chart_controls.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/core/utils/image_cache_manager.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({super.key});
@@ -81,67 +81,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Welcome Admin Section
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColors.primary.withAlpha(20),
-                                  AppColors.primary.withAlpha(5),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: AppColors.primary.withAlpha(30),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primary,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.admin_panel_settings,
-                                    color: Colors.white,
-                                    size: 28,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Administrator Dashboard',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.primary,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Monitor system performance and manage operations',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.textSecondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
                           const SizedBox(height: 24),
 
                           // Metrics Section
@@ -351,25 +290,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               _buildQuickActionCard(
                                 'Issue Payment',
                                 Icons.payment,
-                                Colors.green,
+                                AppColors.primary,
                                 () => context.push('/admin/issue-payment'),
                               ),
                               _buildQuickActionCard(
                                 'Send Notification',
                                 Icons.notifications_active,
-                                Colors.blue,
+                                AppColors.primary,
                                 () => context.push('/admin/notifications'),
                               ),
                               _buildQuickActionCard(
                                 'View Reports',
                                 Icons.analytics,
-                                Colors.purple,
+                                AppColors.primary,
                                 () => context.push('/admin/payment-reports'),
                               ),
                               _buildQuickActionCard(
                                 'Payment History',
                                 Icons.history,
-                                Colors.orange,
+                                AppColors.primary,
                                 () => context.push('/admin/payment-history'),
                               ),
                             ],
@@ -508,18 +447,15 @@ class AdminHeaderSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Dashboard',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      'Hi,',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
                     ),
                     Text(
-                      'Admin Panel',
-                      style: TextStyle(
-                        color: Colors.white.withAlpha(200),
-                        fontSize: 14,
+                      user?.fullName.split(' ').first ?? 'Admin',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ],

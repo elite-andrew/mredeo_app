@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/config/app_routes.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
-import 'package:redeo_app/widgets/common/app_text_field.dart'; // assuming reusable input
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/config/app_routes.dart';
+import 'package:mredeo_app/widgets/common/app_button.dart';
+import 'package:mredeo_app/widgets/common/app_text_field.dart'; // assuming reusable input
 
 class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});

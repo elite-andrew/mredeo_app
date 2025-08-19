@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
-import 'package:redeo_app/data/models/user_model.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
-import 'package:redeo_app/core/utils/image_cache_manager.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/data/models/user_model.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/core/utils/image_cache_manager.dart';
 
 class ClickableProfilePicture extends StatefulWidget {
   final User? user;

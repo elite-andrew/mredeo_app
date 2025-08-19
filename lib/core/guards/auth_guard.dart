@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
 
 class AuthGuard {
   static Widget buildGuardedWidget({

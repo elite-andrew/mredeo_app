@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:redeo_app/data/services/api_client.dart';
-import 'package:redeo_app/data/models/admin_metrics.dart';
-import 'package:redeo_app/data/models/time_bucket_point.dart';
-import 'package:redeo_app/data/models/pending_notification.dart';
+import 'package:mredeo_app/data/services/api_client.dart';
+import 'package:mredeo_app/data/models/admin_metrics.dart';
+import 'package:mredeo_app/data/models/time_bucket_point.dart';
+import 'package:mredeo_app/data/models/pending_notification.dart';
 
 class AdminRepository {
   final ApiClient apiClient;

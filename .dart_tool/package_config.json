@@ -758,13 +758,13 @@
       "languageVersion": "3.2"
     },
     {
-      "name": "redeo_app",
+      "name": "mredeo_app",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     }
   ],
-  "generated": "2025-08-18T14:00:57.405283Z",
+  "generated": "2025-08-19T13:54:11.770132Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///C:/flutter/src/flutter",

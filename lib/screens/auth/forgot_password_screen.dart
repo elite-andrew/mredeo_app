@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:redeo_app/config/app_routes.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
+import 'package:mredeo_app/config/app_routes.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/widgets/common/app_button.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});

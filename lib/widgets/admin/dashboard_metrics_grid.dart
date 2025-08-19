@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/widgets/specific/dashboard_stat_card.dart';
-import 'package:redeo_app/data/models/admin_metrics.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/widgets/specific/dashboard_stat_card.dart';
+import 'package:mredeo_app/data/models/admin_metrics.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
 
 class DashboardMetricsGrid extends StatelessWidget {
   final AdminMetrics? metrics;

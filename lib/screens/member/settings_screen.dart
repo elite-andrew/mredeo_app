@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/config/app_routes.dart';
-import 'package:redeo_app/widgets/specific/settings_item_tile.dart';
-import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/config/app_routes.dart';
+import 'package:mredeo_app/widgets/specific/settings_item_tile.dart';
+import 'package:mredeo_app/widgets/common/app_bottom_navigation.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

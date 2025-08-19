@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
-import 'package:redeo_app/widgets/specific/clickable_profile_picture.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
-import 'package:redeo_app/config/app_routes.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/widgets/common/app_button.dart';
+import 'package:mredeo_app/widgets/specific/clickable_profile_picture.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/config/app_routes.dart';
 
 class MemberProfileScreen extends StatefulWidget {
   const MemberProfileScreen({super.key});

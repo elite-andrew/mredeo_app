@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/data/services/auth_service.dart';
-import 'package:redeo_app/data/services/firebase_auth_service.dart';
-import 'package:redeo_app/data/services/local_storage_service.dart';
-import 'package:redeo_app/data/services/profile_service.dart';
-import 'package:redeo_app/data/models/user_model.dart';
+import 'package:mredeo_app/data/services/auth_service.dart';
+import 'package:mredeo_app/data/services/firebase_auth_service.dart';
+import 'package:mredeo_app/data/services/local_storage_service.dart';
+import 'package:mredeo_app/data/services/profile_service.dart';
+import 'package:mredeo_app/data/models/user_model.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();

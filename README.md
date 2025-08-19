@@ -1,4 +1,4 @@
-# redeo_app
+# mredeo_app
 
 A contributions and payment management solution for Educational Officers Union.
 

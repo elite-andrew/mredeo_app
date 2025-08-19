@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:redeo_app/config/app_config.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/config/app_config.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
 import 'api_service.dart';
 
 class ProfileService {

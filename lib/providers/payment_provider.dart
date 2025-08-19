@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/data/services/payment_service.dart';
-import 'package:redeo_app/data/models/payment_model.dart';
+import 'package:mredeo_app/data/services/payment_service.dart';
+import 'package:mredeo_app/data/models/payment_model.dart';
 
 class PaymentProvider with ChangeNotifier {
   final PaymentService _paymentService = PaymentService();

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/core/utils/image_cache_manager.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/core/utils/image_cache_manager.dart';
 
 class AdminDrawer extends StatelessWidget {
   const AdminDrawer({super.key});
@@ -43,7 +43,7 @@ class AdminDrawer extends StatelessWidget {
                     icon: Icons.analytics_outlined,
                     title: "Payment Reports",
                     subtitle: "Financial Analysis",
-                    color: Colors.blue,
+                    color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, "/admin/payment-reports");
@@ -54,9 +54,9 @@ class AdminDrawer extends StatelessWidget {
                   _buildMenuItem(
                     context,
                     icon: Icons.notifications_outlined,
-                    title: "Issue Notification",
+                    title: "Send Notification",
                     subtitle: "Send Alerts",
-                    color: Colors.orange,
+                    color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, "/admin/notifications");
@@ -69,7 +69,7 @@ class AdminDrawer extends StatelessWidget {
                     icon: Icons.payment_outlined,
                     title: "Issue Payment",
                     subtitle: "Process Transactions",
-                    color: Colors.green,
+                    color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, "/admin/issue-payment");
@@ -82,7 +82,7 @@ class AdminDrawer extends StatelessWidget {
                     icon: Icons.history_outlined,
                     title: "Payment History",
                     subtitle: "Transaction Logs",
-                    color: Colors.purple,
+                    color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, "/admin/payment-history");
@@ -95,7 +95,7 @@ class AdminDrawer extends StatelessWidget {
                     icon: Icons.person_outline,
                     title: "Admin Profile",
                     subtitle: "Account Settings",
-                    color: Colors.teal,
+                    color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
                       context.go("/admin_profile");
@@ -126,7 +126,7 @@ class AdminDrawer extends StatelessWidget {
                     icon: Icons.swap_horiz_outlined,
                     title: "Switch to User Mode",
                     subtitle: "Member Dashboard",
-                    color: Colors.indigo,
+                    color: AppColors.primary,
                     onTap: () {
                       Navigator.of(context).pop();
                       Navigator.pushNamed(context, "/member/dashboard");
@@ -134,9 +134,6 @@ class AdminDrawer extends StatelessWidget {
                   ),
 
                   const Spacer(),
-
-                  // Logout Button
-                  _buildLogoutButton(context),
 
                   const SizedBox(height: 20),
                 ],
@@ -169,7 +166,7 @@ class AdminDrawer extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 AppColors.primary,
-                AppColors.primary.withBlue(AppColors.primary.blue + 30),
+                AppColors.primary.withValues(blue: AppColors.primary.b + 30),
               ],
             ),
             boxShadow: [
@@ -413,71 +410,6 @@ class AdminDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => _handleLogout(context),
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.error.withAlpha(26),
-                AppColors.error.withAlpha(13),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.error.withAlpha(51)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withAlpha(26),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.logout_outlined,
-                  color: AppColors.error,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Log Out',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.error,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Sign out of admin account',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.error.withAlpha(180),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.power_settings_new, color: AppColors.error, size: 20),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   String _formatRole(String role) {
     switch (role.toLowerCase()) {
       case 'member':
@@ -492,95 +424,6 @@ class AdminDrawer extends StatelessWidget {
         return 'Treasurer';
       default:
         return 'Administrator';
-    }
-  }
-
-  Future<void> _handleLogout(BuildContext context) async {
-    final bool? shouldLogout = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: AppColors.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withAlpha(26),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(Icons.logout, color: AppColors.error, size: 24),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Log Out',
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            'Are you sure you want to log out of your admin account?',
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 16),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              style: TextButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text(
-                'Log Out',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (shouldLogout == true && context.mounted) {
-      try {
-        Navigator.of(context).pop(); // Close drawer first
-        await Provider.of<AuthProvider>(context, listen: false).logout();
-        if (context.mounted) {
-          context.go('/login');
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Logout failed: $e'),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
-        }
-      }
     }
   }
 }

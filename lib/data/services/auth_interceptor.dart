@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:redeo_app/config/app_config.dart';
+import 'package:mredeo_app/config/app_config.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 
 class AuthInterceptor extends Interceptor {

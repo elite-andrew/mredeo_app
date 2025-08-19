@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:redeo_app/data/models/time_bucket_point.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/data/models/time_bucket_point.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
 
 class DashboardChart extends StatelessWidget {
   final List<TimeBucketPoint> data;

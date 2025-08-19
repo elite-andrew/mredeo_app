@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
-import 'package:redeo_app/providers/payment_provider.dart';
-import 'package:redeo_app/data/models/payment_model.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/widgets/common/app_button.dart';
+import 'package:mredeo_app/providers/payment_provider.dart';
+import 'package:mredeo_app/data/models/payment_model.dart';
 
 class PaymentStatusScreen extends StatefulWidget {
   const PaymentStatusScreen({super.key});

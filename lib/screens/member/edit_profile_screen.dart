@@ -4,15 +4,15 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
-import 'package:redeo_app/widgets/common/app_button.dart';
-import 'package:redeo_app/widgets/common/validated_text_field.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/providers/profile_provider.dart';
-import 'package:redeo_app/providers/auth_provider.dart';
-import 'package:redeo_app/data/models/user_model.dart';
-import 'package:redeo_app/core/utils/app_logger.dart';
-import 'package:redeo_app/core/utils/image_cache_manager.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/widgets/common/app_button.dart';
+import 'package:mredeo_app/widgets/common/validated_text_field.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/providers/profile_provider.dart';
+import 'package:mredeo_app/providers/auth_provider.dart';
+import 'package:mredeo_app/data/models/user_model.dart';
+import 'package:mredeo_app/core/utils/app_logger.dart';
+import 'package:mredeo_app/core/utils/image_cache_manager.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/data/services/notification_service.dart';
-import 'package:redeo_app/data/models/notification_model.dart';
+import 'package:mredeo_app/data/services/notification_service.dart';
+import 'package:mredeo_app/data/models/notification_model.dart';
 
 class NotificationProvider with ChangeNotifier {
   final NotificationService _notificationService = NotificationService();

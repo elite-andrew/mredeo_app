@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
-import 'package:redeo_app/data/models/admin_metrics.dart';
-import 'package:redeo_app/data/models/time_bucket_point.dart';
-import 'package:redeo_app/data/models/pending_notification.dart';
-import 'package:redeo_app/data/repositories/admin_repository.dart';
+import 'package:mredeo_app/data/models/admin_metrics.dart';
+import 'package:mredeo_app/data/models/time_bucket_point.dart';
+import 'package:mredeo_app/data/models/pending_notification.dart';
+import 'package:mredeo_app/data/repositories/admin_repository.dart';
 
 class AdminProvider extends ChangeNotifier {
   final AdminRepository repository;

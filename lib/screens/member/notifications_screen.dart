@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:redeo_app/widgets/common/app_bottom_navigation.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/providers/notification_provider.dart';
-import 'package:redeo_app/data/models/notification_model.dart';
+import 'package:mredeo_app/widgets/common/app_bottom_navigation.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/providers/notification_provider.dart';
+import 'package:mredeo_app/data/models/notification_model.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

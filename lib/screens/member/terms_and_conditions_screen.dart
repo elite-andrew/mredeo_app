@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
-import 'package:redeo_app/widgets/common/custom_app_bar.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
 
 class TermsAndConditionsScreen extends StatelessWidget {
   const TermsAndConditionsScreen({super.key});

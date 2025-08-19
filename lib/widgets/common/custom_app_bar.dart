@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:redeo_app/core/theme/app_colors.dart';
+import 'package:mredeo_app/core/theme/app_colors.dart';
 
 class CustomAppBar extends StatelessWidget {
   final String title;

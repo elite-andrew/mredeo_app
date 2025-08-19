@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:redeo_app/config/app_config.dart';
-import 'package:redeo_app/data/models/payment_model.dart';
+import 'package:mredeo_app/config/app_config.dart';
+import 'package:mredeo_app/data/models/payment_model.dart';
 import 'api_service.dart';
 
 class PaymentService {

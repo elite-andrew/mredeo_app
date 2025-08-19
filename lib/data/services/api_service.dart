@@ -2,10 +2,10 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:redeo_app/config/app_config.dart';
-import 'package:redeo_app/data/services/auth_interceptor.dart';
-import 'package:redeo_app/data/services/retry_interceptor.dart';
-import 'package:redeo_app/data/services/cache_interceptor.dart';
+import 'package:mredeo_app/config/app_config.dart';
+import 'package:mredeo_app/data/services/auth_interceptor.dart';
+import 'package:mredeo_app/data/services/retry_interceptor.dart';
+import 'package:mredeo_app/data/services/cache_interceptor.dart';
 
 class ApiService {
   late final Dio _dio;

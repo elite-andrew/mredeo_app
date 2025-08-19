@@ -1,4 +1,4 @@
-import 'package:redeo_app/config/app_config.dart';
+import 'package:mredeo_app/config/app_config.dart';
 
 class User {
   final String id;

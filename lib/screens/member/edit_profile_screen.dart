@@ -4,9 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:mredeo_app/widgets/common/custom_app_bar.dart';
-import 'package:mredeo_app/widgets/common/app_button.dart';
-import 'package:mredeo_app/widgets/common/validated_text_field.dart';
 import 'package:mredeo_app/core/theme/app_colors.dart';
 import 'package:mredeo_app/providers/profile_provider.dart';
 import 'package:mredeo_app/providers/auth_provider.dart';
@@ -296,7 +293,190 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Widget _buildProfilePictureSection(User? user) {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          // Modern Header Section
+          _buildModernHeader(context),
+          Expanded(
+            child: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                if (profileProvider.isLoading) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: AppColors.primary,
+                          strokeWidth: 3,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Updating profile...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                final user = profileProvider.user;
+                if (user == null) {
+                  return Center(
+                    child: Container(
+                      margin: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.shadow.withAlpha(13),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withAlpha(20),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.error_outline,
+                              size: 48,
+                              color: AppColors.error,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Unable to load profile',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Please try again',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        // Profile Picture Section
+                        _buildModernProfilePictureSection(user),
+                        const SizedBox(height: 32),
+
+                        // Profile Information Card
+                        _buildModernProfileInfoCard(user),
+                        const SizedBox(height: 24),
+
+                        // Action Buttons
+                        if (_hasChanges || _selectedImage != null)
+                          _buildModernActionButtons(profileProvider),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernHeader(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        20,
+        MediaQuery.of(context).padding.top + 20,
+        20,
+        30,
+      ),
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: AppColors.primary,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 4,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(26),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                const Text(
+                  'Edit Profile',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'Update your information',
+                  style: TextStyle(
+                    color: Colors.white.withAlpha(200),
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 40), // Balance the back button
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernProfilePictureSection(User? user) {
     // Use the full URL from the User model
     String? profilePictureUrl = user?.profilePictureUrl;
     if (profilePictureUrl != null && profilePictureUrl.isNotEmpty) {
@@ -305,322 +485,406 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           '$profilePictureUrl${separator}t=${DateTime.now().millisecondsSinceEpoch}';
     }
 
-    return Center(
-      child: Stack(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withAlpha(13),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
         children: [
-          GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.primary, width: 3),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(26),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withAlpha(20),
+              shape: BoxShape.circle,
+            ),
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.primary.withAlpha(51),
+                        width: 2,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 58,
+                      backgroundColor: AppColors.primary.withAlpha(30),
+                      child:
+                          _selectedImage != null
+                              ? ClipOval(
+                                child: Image.file(
+                                  _selectedImage!,
+                                  width: 116,
+                                  height: 116,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                              : (profilePictureUrl != null
+                                  ? ClipOval(
+                                    child: CachedNetworkImage(
+                                      imageUrl: profilePictureUrl,
+                                      width: 116,
+                                      height: 116,
+                                      fit: BoxFit.cover,
+                                      cacheManager: ImageCacheManager.instance,
+                                      placeholder:
+                                          (context, url) => Container(
+                                            width: 116,
+                                            height: 116,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primary
+                                                  .withAlpha(20),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.camera_alt,
+                                              size: 40,
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                      errorWidget:
+                                          (context, url, error) => Container(
+                                            width: 116,
+                                            height: 116,
+                                            decoration: BoxDecoration(
+                                              color: AppColors.primary
+                                                  .withAlpha(20),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.camera_alt,
+                                              size: 40,
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                    ),
+                                  )
+                                  : Icon(
+                                    Icons.camera_alt,
+                                    size: 40,
+                                    color: AppColors.primary,
+                                  )),
+                    ),
                   ),
-                ],
-              ),
-              child: CircleAvatar(
-                radius: 57,
-                backgroundColor: AppColors.primary,
-                child:
-                    _selectedImage != null
-                        ? ClipOval(
-                          child: Image.file(
-                            _selectedImage!,
-                            width: 114,
-                            height: 114,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                        : (profilePictureUrl != null
-                            ? ClipOval(
-                              child: CachedNetworkImage(
-                                imageUrl: profilePictureUrl,
-                                width: 114,
-                                height: 114,
-                                fit: BoxFit.cover,
-                                cacheManager: ImageCacheManager.instance,
-                                placeholder:
-                                    (context, url) => Container(
-                                      width: 114,
-                                      height: 114,
-                                      decoration: BoxDecoration(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Center(
-                                        child: CircularProgressIndicator(
-                                          color: AppColors.primary,
-                                          strokeWidth: 2,
-                                        ),
-                                      ),
-                                    ),
-                                errorWidget: (context, url, error) {
-                                  AppLogger.warning(
-                                    'Failed to load profile picture in edit screen: $url, Error: $error',
-                                    'EditProfileScreen',
-                                  );
-                                  return Container(
-                                    width: 114,
-                                    height: 114,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        user?.initials ?? '?',
-                                        style: const TextStyle(
-                                          fontSize: 28,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                fadeInDuration: const Duration(
-                                  milliseconds: 300,
-                                ),
-                                fadeOutDuration: const Duration(
-                                  milliseconds: 100,
-                                ),
-                              ),
-                            )
-                            : Text(
-                              user?.initials ?? '?',
-                              style: const TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 3),
+                    ),
+                    child:
+                        _isUpdatingPicture
+                            ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
                                 color: Colors.white,
                               ),
-                            )),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(26),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.camera_alt,
-                color: Colors.white,
-                size: 18,
-              ),
-            ),
-          ),
-          if (_isUpdatingPicture)
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(128),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
+                            )
+                            : const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withAlpha(10),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.primary.withAlpha(30)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.touch_app, color: AppColors.primary, size: 16),
+                const SizedBox(width: 8),
+                Text(
+                  'Tap to change profile picture',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Column(
+  Widget _buildModernProfileInfoCard(User? user) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withAlpha(13),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
         children: [
-          const CustomAppBar(title: 'Edit Profile'),
-          Expanded(
-            child: Consumer<ProfileProvider>(
-              builder: (context, profileProvider, child) {
-                final user = profileProvider.user;
-
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      children: [
-                        // Profile Picture Section
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withAlpha(26),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            children: [
-                              _buildProfilePictureSection(user),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Tap to change profile picture',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Form Fields
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: AppColors.surface,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withAlpha(26),
-                                blurRadius: 4,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Editable Information',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'You can edit your phone number and profile picture',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-
-                              ValidatedTextField(
-                                controller: _fullNameController,
-                                label: 'Full Name',
-                                hintText: 'Your full name',
-                                prefixIcon: Icons.person,
-                                readOnly: true,
-                                validator: (value) {
-                                  // Read-only field doesn't need validation
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              ValidatedTextField(
-                                controller: _phoneController,
-                                label: 'Phone Number',
-                                hintText: 'Enter your phone number',
-                                prefixIcon: Icons.phone,
-                                keyboardType: TextInputType.phone,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'Please enter your phone number';
-                                  }
-                                  if (!RegExp(
-                                    r'^\+?[0-9]{10,15}$',
-                                  ).hasMatch(value.trim())) {
-                                    return 'Please enter a valid phone number';
-                                  }
-                                  return null;
-                                },
-                              ),
-
-                              const SizedBox(height: 16),
-
-                              ValidatedTextField(
-                                controller: _emailController,
-                                label: 'Email',
-                                hintText: 'Your email address',
-                                prefixIcon: Icons.email,
-                                keyboardType: TextInputType.emailAddress,
-                                readOnly: true,
-                                validator: (value) {
-                                  // Read-only field doesn't need validation
-                                  return null;
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        // Save Button
-                        Consumer<ProfileProvider>(
-                          builder: (context, profileProvider, child) {
-                            AppLogger.debug(
-                              'Building save button - _hasChanges: $_hasChanges, isLoading: ${profileProvider.isLoading}',
-                              'EditProfileScreen',
-                            );
-                            return AppButton(
-                              text: 'Save Changes',
-                              onPressed:
-                                  _hasChanges
-                                      ? () {
-                                        AppLogger.debug(
-                                          'Save button pressed!',
-                                          'EditProfileScreen',
-                                        );
-                                        _saveChanges();
-                                      }
-                                      : null,
-                              isLoading:
-                                  profileProvider.isLoading ||
-                                  _isUpdatingPicture,
-                            );
-                          },
-                        ),
-
-                        const SizedBox(height: 30),
-                      ],
-                    ),
-                  ),
-                );
-              },
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withAlpha(10),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
             ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withAlpha(20),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(Icons.edit, color: AppColors.primary, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Profile Information',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildModernInfoField(
+                  'Full Name',
+                  _fullNameController,
+                  Icons.person,
+                  enabled: false,
+                  validator: null,
+                ),
+                const SizedBox(height: 16),
+                _buildModernInfoField(
+                  'Phone Number',
+                  _phoneController,
+                  Icons.phone,
+                  enabled: true,
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Phone number is required';
+                    }
+                    final phoneRegex = RegExp(r'^\+255\d{9}$|^0\d{9}$');
+                    if (!phoneRegex.hasMatch(value.trim())) {
+                      return 'Please enter a valid phone number';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildModernInfoField(
+                  'Email',
+                  _emailController,
+                  Icons.email,
+                  enabled: false,
+                  validator: null,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernInfoField(
+    String title,
+    TextEditingController controller,
+    IconData icon, {
+    bool enabled = true,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color:
+            enabled
+                ? AppColors.background
+                : AppColors.background.withAlpha(128),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color:
+              enabled
+                  ? AppColors.primary.withAlpha(26)
+                  : AppColors.textSecondary.withAlpha(51),
+        ),
+      ),
+      child: TextFormField(
+        controller: controller,
+        enabled: enabled,
+        keyboardType: keyboardType,
+        validator: validator,
+        style: TextStyle(
+          fontSize: 16,
+          color: enabled ? AppColors.textPrimary : AppColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+        decoration: InputDecoration(
+          labelText: title,
+          labelStyle: TextStyle(
+            fontSize: 14,
+            color: enabled ? AppColors.primary : AppColors.textSecondary,
+            fontWeight: FontWeight.w600,
+          ),
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color:
+                  enabled
+                      ? AppColors.primary.withAlpha(20)
+                      : AppColors.textSecondary.withAlpha(20),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: enabled ? AppColors.primary : AppColors.textSecondary,
+              size: 20,
+            ),
+          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModernActionButtons(ProfileProvider profileProvider) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withAlpha(13),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            height: 56,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primary, AppColors.primary.withAlpha(200)],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withAlpha(51),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap:
+                    profileProvider.isLoading || _isUpdatingPicture
+                        ? null
+                        : _saveChanges,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (profileProvider.isLoading || _isUpdatingPicture)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      else
+                        const Icon(Icons.save, color: Colors.white, size: 20),
+                      const SizedBox(width: 12),
+                      Text(
+                        profileProvider.isLoading || _isUpdatingPicture
+                            ? 'Updating...'
+                            : 'Save Changes',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            _selectedImage != null
+                ? 'Profile picture and information will be updated'
+                : 'Your phone number will be updated',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.textSecondary,
+              fontStyle: FontStyle.italic,
+            ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

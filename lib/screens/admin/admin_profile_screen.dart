@@ -249,7 +249,7 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                                         ),
                                       ),
                                       child: const Icon(
-                                        Icons.admin_panel_settings,
+                                        Icons.camera_alt,
                                         color: Colors.white,
                                         size: 20,
                                       ),
@@ -303,52 +303,6 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
                                         fontSize: 14,
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-
-                              // Admin privileges info
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary.withAlpha(10),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: AppColors.primary.withAlpha(30),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.security,
-                                      color: AppColors.primary,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            'Administrator Access',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.primary,
-                                            ),
-                                          ),
-                                          Text(
-                                            'Full system privileges enabled',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: AppColors.primary,
-                                            ),
-                                          ),
-                                        ],
                                       ),
                                     ),
                                   ],
@@ -816,6 +770,7 @@ class AdminProfileHeaderSection extends StatelessWidget {
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: () => context.go('/admin_dashboard'),
@@ -832,13 +787,11 @@ class AdminProfileHeaderSection extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Admin Profile',
+                      'My Profile',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -855,18 +808,9 @@ class AdminProfileHeaderSection extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(26),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.admin_panel_settings,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
+              const SizedBox(
+                width: 40,
+              ), // Placeholder to balance the back button
             ],
           ),
         );

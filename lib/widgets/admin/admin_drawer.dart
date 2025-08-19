@@ -41,7 +41,7 @@ class AdminDrawer extends StatelessWidget {
                   _buildMenuItem(
                     context,
                     icon: Icons.analytics_outlined,
-                    title: "Payment Reports",
+                    title: "Contribution Reports",
                     subtitle: "Financial Analysis",
                     color: AppColors.primary,
                     onTap: () {
